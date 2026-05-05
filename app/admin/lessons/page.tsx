@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { fetchLessons, createLesson, updateLesson, deleteLesson } from '../../../utils/adminApi';
-import styles from './lessons.module.css';
+import styles from '../../dashboard.module.css';
 
 interface Lesson {
   id: number;
