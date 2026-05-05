@@ -1,0 +1,252 @@
+/* app/admin/questions/questions.module.css */
+.topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: -3rem; /* Offset the main padding to stick at the very top */
+    background: #0d0614;
+    padding: 1.5rem 0;
+    z-index: 50;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator when scrolling */
+}
+
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.topicSelect {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.topicSelect option {
+    background: #0d0614;
+    color: white;
+}
+
+.addBtn {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.addBtn:hover {
+    transform: translateY(-2px);
+}
+
+.questionList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.qCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.2s;
+}
+
+.qHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.cardBtns {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.editBtn, .deleteBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    padding: 0.5rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.editBtn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+    color: #a78bfa;
+    transform: translateY(-1px);
+}
+
+.deleteBtn:hover {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.4);
+    color: #fb7185;
+    transform: translateY(-1px);
+}
+
+.qNum {
+    font-size: 0.75rem;
+    color: #ec4899;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.qText {
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 1rem 0 2rem 0;
+    line-height: 1.4;
+}
+
+.optionsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.option {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.correct {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+    color: #10b981;
+}
+
+.correctBadge {
+    font-size: 0.7rem;
+    background: #10b981;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal {
+    background: #16101c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 600px;
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal h2 {
+    margin-bottom: 2rem;
+    color: #fff;
+}
+
+.inputGroup {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.inputGroup label, .optionsSection label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.inputGroup textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    font-family: inherit;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.optionsSection {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.optionInputRow {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.optionInputRow input[type="text"] {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    color: white;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.cancelBtn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.submitBtn {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}

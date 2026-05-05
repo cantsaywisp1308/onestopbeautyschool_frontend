@@ -1,0 +1,356 @@
+/* app/page.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #0d0614; /* very dark rich plum */
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #ffffff;
+}
+
+/* NAVBAR STYLES */
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background: rgba(13, 6, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.navLogo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hamburgerBtn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.hamburgerBtn:hover {
+  color: #a78bfa;
+  transform: scale(1.1);
+}
+
+.sideMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 300px;
+  max-width: 80vw;
+  background-color: rgba(15, 15, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  padding: 5rem 2rem 2rem 2rem;
+  z-index: 200;
+  animation: slideIn 0.3s forwards ease-out;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: white;
+}
+
+.sideMenu a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: color 0.2s, padding-left 0.2s;
+}
+
+.sideMenu a:hover {
+  color: #a78bfa;
+  padding-left: 10px;
+}
+
+.highlightedMenuItem {
+  display: flex !important;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(167, 139, 250, 0.03) !important;
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 1rem !important;
+  margin: 0.5rem 0;
+  border: none !important;
+  border-left: 4px solid #a78bfa !important; /* The signature accent */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.highlightedMenuItem:hover {
+  background: rgba(167, 139, 250, 0.08) !important;
+  padding-left: 1.5rem !important;
+  border-left-color: #ec4899 !important;
+}
+
+/* Gradient text for the specific link */
+.highlightedMenuItem span {
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700 !important;
+}
+
+.sideMenuDivider {
+  height: 20px;
+}
+
+.menuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 150;
+  animation: fadeIn 0.3s forwards ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.backgroundGlow {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, rgba(139,92,246,0.05) 40%, transparent 70%);
+  filter: blur(100px);
+  z-index: 0;
+  animation: pulse 10s infinite alternate;
+}
+
+.main {
+  z-index: 1;
+  max-width: 1200px;
+  width: 100%;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fce7f3; /* light pink */
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.logo {
+  max-width: 250px;
+  height: auto;
+  /* Since the logo is dark and the background is dark, we convert the logo to white */
+  filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(167, 139, 250, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.title {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #a78bfa; /* subtle purple */
+  max-width: 600px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.4);
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 35px -5px rgba(236, 72, 153, 0.6);
+  filter: brightness(1.1);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.featuresSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 2.5rem;
+  text-align: left;
+  backdrop-filter: blur(20px);
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(236, 72, 153, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.featureCard h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.featureCard p {
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primaryButton, .secondaryButton {
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .sideMenu {
+    width: 250px;
+    padding: 4rem 1.5rem 2rem 1.5rem;
+  }
+
+  .sideMenu a {
+    font-size: 1rem;
+    padding: 0.8rem 0;
+  }
+}

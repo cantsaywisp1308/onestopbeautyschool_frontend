@@ -1,0 +1,256 @@
+.container {
+  padding: 2rem;
+  color: white;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.header {
+  margin-bottom: 3rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.content {
+  margin-bottom: 4rem;
+}
+
+.slideContainer {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2.5rem;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress {
+  color: #a78bfa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.navButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.navButtonPrimary {
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  border: none;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.navButtonPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.sectionBlock {
+  margin-bottom: 3rem;
+  flex-grow: 1;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #e2e8f0;
+}
+
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  background: #000;
+}
+
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.imageWrapper {
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.imageWrapper img {
+  max-width: 100%;
+  max-height: 500px;
+  display: block;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.textWrapper {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  overflow-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+.textWrapper * {
+  word-break: normal !important;
+}
+
+.textWrapper p {
+  margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+.textWrapper img {
+  max-width: 100%;
+  height: auto;
+}
+
+.textWrapper strong,
+.textWrapper b {
+  color: #f472b6; /* Bright vibrant pink */
+  font-weight: 700;
+  background: rgba(244, 114, 182, 0.1); /* Subtle pink background glow */
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  border-bottom: 1px solid rgba(244, 114, 182, 0.3);
+}
+
+.practiceArea {
+  background: rgba(167, 139, 250, 0.05);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 4rem;
+}
+
+.practiceArea h2 {
+  color: #a78bfa;
+  margin-bottom: 0.5rem;
+}
+
+.practiceArea p {
+  color: #94a3b8;
+  margin-bottom: 2rem;
+}
+
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.topicCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: white;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.topicCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(167, 139, 250, 0.4);
+  transform: translateY(-2px);
+}
+
+.topicCard h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.topicAction {
+  color: #a78bfa;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.loader {
+  text-align: center;
+  padding: 3rem;
+  color: #a78bfa;
+}
+
+.empty {
+  color: #94a3b8;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+}
+
+.noTopics {
+  color: #94a3b8;
+  font-style: italic;
+}
