@@ -2,10 +2,13 @@ import { API_BASE_URL } from './api';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
   };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
 };
 
 /** Helper for safe JSON parsing and error handling */
@@ -19,23 +22,23 @@ const safeJson = async (response: Response, errorMessage: string) => {
 
 /** TOPICS - Public/Student Reads */
 export async function fetchTopics() {
-  const response = await fetch(`${API_BASE_URL}/topics`, { 
-    headers: getAuthHeaders() 
+  const response = await fetch(`${API_BASE_URL}/topics`, {
+    headers: getAuthHeaders()
   });
   return safeJson(response, "Failed to fetch topics");
 }
 
 export async function fetchTopicById(id: number) {
-  const response = await fetch(`${API_BASE_URL}/topics/${id}`, { 
-    headers: getAuthHeaders() 
+  const response = await fetch(`${API_BASE_URL}/topics/${id}`, {
+    headers: getAuthHeaders()
   });
   return safeJson(response, "Failed to fetch topic");
 }
 
 /** QUESTIONS - Filtered by Topic for practice */
 export async function fetchQuestionsByTopic(topicId: number) {
-  const response = await fetch(`${API_BASE_URL}/questions/topic/${topicId}`, { 
-    headers: getAuthHeaders() 
+  const response = await fetch(`${API_BASE_URL}/questions/topic/${topicId}`, {
+    headers: getAuthHeaders()
   });
   return safeJson(response, "Failed to fetch questions");
 }
@@ -57,86 +60,6 @@ export async function updateMyProfile(profileData: any) {
   return safeJson(response, "Failed to update profile");
 }
 
-/** ENROLLMENTS & COURSES */
-export async function fetchAllCourses() {
-  const response = await fetch(`${API_BASE_URL}/courses`);
-  return safeJson(response, "Failed to fetch courses");
-}
-
-export async function fetchMyEnrollments() {
-  const response = await fetch(`${API_BASE_URL}/enrollments/me`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch enrollments");
-}
-
-export async function fetchCourseById(courseId: number) {
-  const response = await fetch(`${API_BASE_URL}/courses/${courseId}`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch course details");
-}
-
-export async function fetchCourseLessons(courseId: number) {
-  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/lessons`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch course lessons");
-}
-
-/** LESSONS & SECTIONS */
-export async function fetchLessonById(lessonId: number) {
-  const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch lesson details");
-}
-
-/** SECTIONS */
-export async function fetchSectionsByLesson(lessonId: number) {
-  const response = await fetch(`${API_BASE_URL}/sections/lesson/${lessonId}`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch lesson sections");
-}
-
-/** EXAMS */
-export async function fetchExams() {
-  const response = await fetch(`${API_BASE_URL}/exams`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch exams");
-}
-
-export async function fetchExamById(examId: number) {
-  const response = await fetch(`${API_BASE_URL}/exams/${examId}`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch exam details");
-}
-
-export async function fetchExamQuestions(examId: number) {
-  const response = await fetch(`${API_BASE_URL}/exams/${examId}/questions`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch exam questions");
-}
-
-export async function startOrResumeExam(examId: number) {
-  const response = await fetch(`${API_BASE_URL}/attempts/exams/${examId}/start`, {
-    method: 'POST',
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to start/resume exam attempt");
-}
-
-export async function fetchActiveExams() {
-  const response = await fetch(`${API_BASE_URL}/attempts/exams/active`, {
-    headers: getAuthHeaders()
-  });
-  return safeJson(response, "Failed to fetch active exams");
-}
-
 /** ATTEMPTS & PROGRESS */
 export async function submitAttempt(data: { topicId?: number, examId?: number, answers: Record<string, number> }) {
   const response = await fetch(`${API_BASE_URL}/attempts/submit`, {
@@ -154,15 +77,15 @@ export async function fetchMyAttempts() {
   return safeJson(response, "Failed to fetch attempt history");
 }
 
-/** PAYMENTS */
+export async function fetchAllCourses() {
+  const response = await fetch(`${API_BASE_URL}/courses`);
+  return safeJson(response, "Failed to fetch courses");
+}
+
 export async function createCheckoutSession(courseId: number) {
-  const response = await fetch(`${API_BASE_URL}/payments/create-checkout-session`, {
+  const response = await fetch(`${API_BASE_URL}/payments/create-checkout-session?courseId=${courseId}`, {
     method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ courseId })
+    headers: getAuthHeaders()
   });
   return safeJson(response, "Failed to create checkout session");
 }
-
-
-
