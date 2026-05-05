@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const US_STATES = [
   { code: 'WI', name: 'Wisconsin' }, { code: 'WY', name: 'Wyoming' }
 ];
 
-export default function SignupPage() {
+export function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -116,12 +116,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className={styles.container}>
-
-      <div className={styles.backgroundGlow}></div>
-      
-      <div className={styles.signupCard}>
-        <h1 className={styles.title}>Join OneStop</h1>
+    <div className={styles.signupCard}>
+      <h1 className={styles.title}>Join OneStop</h1>
         <p className={styles.subtitle}>Complete your student profile to gain access.</p>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -217,6 +213,16 @@ export default function SignupPage() {
           Already have an account? <Link href={`/login${searchParams.get('redirect') ? `?redirect=${searchParams.get('redirect')}` : ''}`}>Log In</Link>
         </p>
       </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.backgroundGlow}></div>
+      <Suspense fallback={<div style={{color: 'white', textAlign: 'center', padding: '2rem'}}>Loading...</div>}>
+        <SignupContent />
+      </Suspense>
     </div>
   );
 }
