@@ -121,7 +121,7 @@ export async function fetchMyEnrollments() {
 }
 
 export async function fetchSectionsByLesson(lessonId: number) {
-  const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/sections`, { headers: getAuthHeaders() });
+  const response = await fetch(`${API_BASE_URL}/sections/lesson/${lessonId}`, { headers: getAuthHeaders() });
   return safeJson(response, "Failed to fetch lesson sections");
 }
 
@@ -131,4 +131,14 @@ export async function startOrResumeExam(examId: number) {
     headers: getAuthHeaders() 
   });
   return safeJson(response, "Failed to start or resume exam");
+}
+
+export async function fetchCourseById(id: number) {
+  const response = await fetch(`${API_BASE_URL}/courses/${id}`, { headers: getAuthHeaders() });
+  return safeJson(response, "Failed to fetch course details");
+}
+
+export async function fetchLessonsByCourse(courseId: number) {
+  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/lessons`, { headers: getAuthHeaders() });
+  return safeJson(response, "Failed to fetch course lessons");
 }
