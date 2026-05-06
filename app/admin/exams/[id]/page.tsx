@@ -65,7 +65,7 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
       setTopics(topicData);
       if (topicData.length > 0) {
         setSelectedTopicId(topicData[0].id);
-        setNewQ(prev => ({ ...prev, topicId: topicData[0].id }));
+        setNewQ(prev => ({ ...prev, topicId: 0 })); // 0 means no topic
       }
 
       const eData = await fetchExamById(examId);
@@ -135,7 +135,6 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
 
   async function handleCreateNewQuestion(e: React.FormEvent) {
     e.preventDefault();
-    if (!newQ.topicId) return alert("Please select a topic");
     
     try {
       const createdQ = await createQuestion(newQ);
@@ -270,7 +269,7 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
                     <p>{q.questionText}</p>
                   </div>
                   <div className={examStyles.qActionRow}>
-                    <button onClick={() => setEditingQ(JSON.parse(JSON.stringify(q)))} className={examStyles.viewBtn}>Edit</button>
+                    <button onClick={() => setEditingQ({...JSON.parse(JSON.stringify(q)), topicId: q.topic?.id || ''})} className={examStyles.viewBtn}>Edit</button>
                     <button onClick={() => handleRemove(q.id)} className={examStyles.removeBtn}>Remove</button>
                   </div>
                 </div>
@@ -307,7 +306,7 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
                         <button onClick={() => toggleExpand(q.id)} className={examStyles.viewBtn}>
                           {isExpanded ? 'Hide Info' : 'View Info'}
                         </button>
-                        <button onClick={() => setEditingQ(JSON.parse(JSON.stringify(q)))} className={examStyles.viewBtn}>Edit</button>
+                        <button onClick={() => setEditingQ({...JSON.parse(JSON.stringify(q)), topicId: q.topic?.id || ''})} className={examStyles.viewBtn}>Edit</button>
                         {!isInExam ? (
                           <button onClick={() => handleAdd(q.id)} className={examStyles.addBtnMini}>Add</button>
                         ) : (
@@ -362,10 +361,10 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
             <div className={examStyles.formRow}>
               <label>Select Topic for this question</label>
               <select 
-                value={newQ.topicId} 
+                value={newQ.topicId || ''} 
                 onChange={e => setNewQ({...newQ, topicId: Number(e.target.value)})}
-                required
               >
+                <option value="">-- No Topic (General Exam Question) --</option>
                 {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
@@ -446,6 +445,17 @@ export default function ManageExam({ params }: { params: Promise<{ id: string }>
               <button onClick={() => setEditingQ(null)} style={{background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.5rem', cursor: 'pointer'}}>✕</button>
             </div>
             <form onSubmit={handleUpdateQuestion} className={examStyles.newQForm}>
+              <div className={examStyles.formRow}>
+                <label>Assigned Topic</label>
+                <select 
+                  value={editingQ.topicId || ''} 
+                  onChange={e => setEditingQ({...editingQ, topicId: Number(e.target.value) || null})}
+                >
+                  <option value="">-- No Topic (General Exam Question) --</option>
+                  {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+
               <div className={examStyles.formRow}>
                 <label>Question Text</label>
                 <textarea 
