@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { fetchSectionsByLesson, createSection, updateSection, deleteSection, fetchLessonById, fetchTopics, addTopicToLesson, removeTopicFromLesson } from '../../../../../utils/adminApi';
+import { fetchSectionsByLesson, createSection, updateSection, deleteSection, fetchLessonById, fetchTopics, addTopicToLesson, removeTopicFromLesson, fetchLessonTopics } from '../../../../../utils/adminApi';
 import styles from './sections.module.css';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
@@ -25,6 +25,7 @@ export default function SectionBuilder() {
 
   const [sections, setSections] = useState<Section[]>([]);
   const [lesson, setLesson] = useState<any>(null);
+  const [lessonTopics, setLessonTopics] = useState<any[]>([]);
   const [allTopics, setAllTopics] = useState<any[]>([]);
   const [selectedTopicId, setSelectedTopicId] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -49,6 +50,8 @@ export default function SectionBuilder() {
       setSections(s);
       const l = await fetchLessonById(lessonId);
       setLesson(l);
+      const lt = await fetchLessonTopics(lessonId);
+      setLessonTopics(lt);
       const t = await fetchTopics();
       setAllTopics(t);
     } catch (err) { console.error(err); }
@@ -197,7 +200,7 @@ export default function SectionBuilder() {
             >
               <option value="">Select a topic to add...</option>
               {allTopics
-                .filter(t => !(lesson.topics || []).some((assigned: any) => assigned.id === t.id))
+                .filter(t => !lessonTopics.some((assigned: any) => assigned.id === t.id))
                 .map(t => (
                   <option key={t.id} value={t.id}>{t.name}</option>
               ))}
@@ -208,10 +211,10 @@ export default function SectionBuilder() {
           </div>
 
           <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-            {(lesson.topics || []).length === 0 && (
+            {lessonTopics.length === 0 && (
               <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No topics assigned to this lesson yet.</p>
             )}
-            {(lesson.topics || []).map((t: any) => (
+            {lessonTopics.map((t: any) => (
               <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.5)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(167, 139, 250, 0.3)' }}>
                 <div>
                   <h4 style={{ margin: 0, color: 'white' }}>{t.name}</h4>

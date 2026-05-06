@@ -142,3 +142,8 @@ export async function fetchLessonsByCourse(courseId: number) {
   const response = await fetch(`${API_BASE_URL}/courses/${courseId}/lessons`, { headers: getAuthHeaders() });
   return safeJson(response, "Failed to fetch course lessons");
 }
+
+export async function fetchLessonTopics(lessonId: number) {
+  const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/topics`, { headers: getAuthHeaders() });
+  return safeJson(response, "Failed to fetch practice topics for lesson");
+}

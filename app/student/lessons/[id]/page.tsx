@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchLessonById, fetchSectionsByLesson } from '../../../../utils/studentApi';
+import { fetchLessonById, fetchSectionsByLesson, fetchLessonTopics } from '../../../../utils/studentApi';
 import styles from './lesson.module.css';
 
 export default function StudentLessonView() {
@@ -12,6 +12,7 @@ export default function StudentLessonView() {
   const router = useRouter();
 
   const [lesson, setLesson] = useState<any>(null);
+  const [lessonTopics, setLessonTopics] = useState<any[]>([]);
   const [sections, setSections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -24,6 +25,8 @@ export default function StudentLessonView() {
     try {
       const l = await fetchLessonById(lessonId);
       setLesson(l);
+      const lt = await fetchLessonTopics(lessonId);
+      setLessonTopics(lt);
       const s = await fetchSectionsByLesson(lessonId);
       s.sort((a: any, b: any) => a.orderIndex - b.orderIndex);
       setSections(s);
@@ -112,8 +115,8 @@ export default function StudentLessonView() {
             <h2>You finished the lesson!</h2>
             <p>Ready to test your knowledge on the topics covered?</p>
             <div className={styles.topicGrid}>
-              {lesson?.topics && lesson.topics.length > 0 ? (
-                lesson.topics.map((topic: any) => (
+              {lessonTopics && lessonTopics.length > 0 ? (
+                lessonTopics.map((topic: any) => (
                   <Link key={topic.id} href={`/student/topics/${topic.id}`} className={styles.topicCard}>
                     <h3>{topic.name}</h3>
                     <div className={styles.topicAction}>Start Flashcards &rarr;</div>

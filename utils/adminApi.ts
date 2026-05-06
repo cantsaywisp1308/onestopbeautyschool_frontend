@@ -301,6 +301,11 @@ export async function removeTopicFromLesson(lessonId: number, topicId: number) {
   return safeJson(response);
 }
 
+export async function fetchLessonTopics(lessonId: number) {
+  const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/topics`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
 /** SECTIONS */
 export async function fetchSectionsByLesson(lessonId: number) {
   const response = await fetch(`${API_BASE_URL}/sections/lesson/${lessonId}`, { headers: getAuthHeaders() });
