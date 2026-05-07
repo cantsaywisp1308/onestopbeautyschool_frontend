@@ -21,6 +21,9 @@ function LoginContent() {
     if (searchParams.get('registered')) {
       setMessage('Registration successful! Please log in.');
     }
+    if (searchParams.get('expired')) {
+      setError('Your session has expired. Please log in again to continue.');
+    }
   }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {

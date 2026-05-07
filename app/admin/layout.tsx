@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
+import AdminSidebar from '../../components/AdminSidebar';
 
 interface JwtPayload {
   role?: string;
@@ -59,5 +60,10 @@ export default function AdminLayout({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <AdminSidebar />
+      <div style={{ paddingLeft: '0' }}>{children}</div>
+    </>
+  );
 }

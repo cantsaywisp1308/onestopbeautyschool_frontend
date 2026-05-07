@@ -90,6 +90,14 @@ export async function deleteQuestion(id: number) {
 
 /** EXAMS */
 const safeJson = async (response: Response) => {
+  if (response.status === 401 || response.status === 403) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      window.location.href = '/login?expired=true';
+    }
+    throw new Error("Session expired");
+  }
+
   if (!response.ok) {
     let errorText = "Unknown server error";
     try {
@@ -378,6 +386,11 @@ export async function fetchAllStudents() {
 
 export async function searchStudents(query: string) {
   const response = await fetch(`${API_BASE_URL}/user/students/search?q=${encodeURIComponent(query)}`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
+export async function fetchDashboardMetrics() {
+  const response = await fetch(`${API_BASE_URL}/admin/analytics/dashboard`, { headers: getAuthHeaders() });
   return safeJson(response);
 }
 

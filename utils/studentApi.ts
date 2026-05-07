@@ -13,6 +13,14 @@ const getAuthHeaders = () => {
 
 /** Helper for safe JSON parsing and error handling */
 const safeJson = async (response: Response, errorMessage: string) => {
+  if (response.status === 401 || response.status === 403) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      window.location.href = '/login?expired=true';
+    }
+    throw new Error("Session expired");
+  }
+
   if (!response.ok) {
     const errorText = await response.text().catch(() => "Unknown server error");
     throw new Error(`${errorMessage}: ${errorText || response.statusText}`);

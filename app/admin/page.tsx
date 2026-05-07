@@ -1,68 +1,125 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import LogoutModal from '../../components/LogoutModal';
-
+import { useState, useEffect } from 'react';
+import { fetchDashboardMetrics } from '../../utils/adminApi';
 import styles from '../dashboard.module.css';
 
+interface DashboardMetrics {
+  totalRevenueAllTime: number;
+  totalRevenueThisMonth: number;
+  totalStudents: number;
+  newEnrollmentsThisMonth: number;
+  totalCourses: number;
+  totalQuestions: number;
+  averageExamScore: number;
+}
 
 export default function AdminDashboard() {
-  const router = useRouter();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [revenueTab, setRevenueTab] = useState<'month' | 'allTime'>('month');
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/');
-  };
+  useEffect(() => {
+    loadMetrics();
+  }, []);
 
-  const toggleLogoutModal = () => setShowLogoutModal(!showLogoutModal);
-
+  async function loadMetrics() {
+    try {
+      const data = await fetchDashboardMetrics();
+      setMetrics(data);
+    } catch (error) {
+      console.error("Failed to load metrics:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.brand}>OneStop Admin</div>
-        <button className={styles.logoutButton} onClick={toggleLogoutModal}>
-          Log Out
-        </button>
       </header>
       
       <main className={styles.main}>
-        <h1 className={styles.title}>Admin Control Panel</h1>
-        <p className={styles.subtitle}>Manage exams, questions, and view student analytics.</p>
+        <h1 className={styles.title}>Dashboard Overview</h1>
+        <p className={styles.subtitle}>A high-level view of your beauty school's performance.</p>
         
-        <div className={styles.cardGrid}>
-          <Link href="/admin/lessons" className={styles.card}>
-            <h3>Global Lesson Bank</h3>
-            <p>Create and structure your reusable learning modules (lessons and rich media sections).</p>
-          </Link>
-          <Link href="/admin/courses" className={styles.card}>
-            <h3>Courses</h3>
-            <p>Structure your curriculum by building full courses using lessons from the bank.</p>
-          </Link>
-          <Link href="/admin/topics" className={styles.card}>
-            <h3>Class Topics</h3>
-            <p>Define categories like Anatomy, Skin Care, or Safety to organize your question bank.</p>
-          </Link>
-          <Link href="/admin/questions" className={styles.card}>
-            <h3>Question Bank</h3>
-            <p>Add and manage multi-option questions categorized by your specific topics.</p>
-          </Link>
-          <Link href="/admin/exams" className={styles.card}>
-            <h3>Professional Exams</h3>
-            <p>Create full exams and pick the perfect set of questions from your bank.</p>
-          </Link>
-        </div>
-      </main>
+        {loading ? (
+          <p>Loading analytics...</p>
+        ) : metrics ? (
+          <div className={styles.analyticsGrid}>
+            
+            {/* REVENUE CARD with Tabs */}
+            <div className={styles.statCard}>
+              <div className={styles.cardHeader}>
+                <h3>Revenue</h3>
+                <div className={styles.tabs}>
+                  <button 
+                    className={`${styles.tab} ${revenueTab === 'month' ? styles.activeTab : ''}`}
+                    onClick={() => setRevenueTab('month')}
+                  >
+                    This Month
+                  </button>
+                  <button 
+                    className={`${styles.tab} ${revenueTab === 'allTime' ? styles.activeTab : ''}`}
+                    onClick={() => setRevenueTab('allTime')}
+                  >
+                    All-Time
+                  </button>
+                </div>
+              </div>
+              <p className={styles.statValue}>
+                ${revenueTab === 'month' 
+                  ? metrics.totalRevenueThisMonth?.toFixed(2) || '0.00'
+                  : metrics.totalRevenueAllTime?.toFixed(2) || '0.00'}
+              </p>
+              <p className={styles.statLabel}>
+                {revenueTab === 'month' ? 'Earned this calendar month' : 'Lifetime earnings'}
+              </p>
+            </div>
 
-      <LogoutModal 
-        isOpen={showLogoutModal} 
-        onClose={toggleLogoutModal} 
-        onConfirm={handleLogout} 
-      />
+            {/* STUDENTS CARD */}
+            <div className={styles.statCard}>
+              <div className={styles.cardHeader}>
+                <h3>Students</h3>
+              </div>
+              <p className={styles.statValue}>{metrics.totalStudents || 0}</p>
+              <p className={styles.statLabel}>
+                <span className={styles.trendUp}>+{metrics.newEnrollmentsThisMonth || 0}</span> new enrollments this month
+              </p>
+            </div>
+
+            {/* ACADEMICS CARD */}
+            <div className={styles.statCard}>
+              <div className={styles.cardHeader}>
+                <h3>Average Score</h3>
+              </div>
+              <p className={styles.statValue}>{metrics.averageExamScore?.toFixed(1) || 0}%</p>
+              <p className={styles.statLabel}>Global average across all exams</p>
+            </div>
+
+            {/* CONTENT CARD */}
+            <div className={styles.statCard}>
+              <div className={styles.cardHeader}>
+                <h3>Content Catalog</h3>
+              </div>
+              <div className={styles.multiStat}>
+                <div>
+                  <p className={styles.subStatValue}>{metrics.totalCourses || 0}</p>
+                  <p className={styles.statLabel}>Active Courses</p>
+                </div>
+                <div>
+                  <p className={styles.subStatValue}>{metrics.totalQuestions || 0}</p>
+                  <p className={styles.statLabel}>Question Bank</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        ) : (
+          <p>Failed to load analytics data.</p>
+        )}
+      </main>
     </div>
   );
 }
