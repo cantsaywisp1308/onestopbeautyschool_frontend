@@ -54,11 +54,13 @@ export async function fetchQuestionsByTopic(topicId: number) {
 }
 
 export async function createQuestion(questionData: any) {
-  const { topicId, ...rest } = questionData;
-  const body = {
-    ...rest,
-    topic: topicId ? { id: topicId } : null
-  };
+  // If topic is already provided as an object, use it directly. 
+  // Otherwise, fallback to checking topicId.
+  const body = { ...questionData };
+  if (questionData.topicId && !questionData.topic) {
+    body.topic = { id: questionData.topicId };
+    delete body.topicId;
+  }
   const response = await fetch(`${API_BASE_URL}/questions`, {
     method: 'POST',
     headers: getAuthHeaders(),
@@ -68,11 +70,11 @@ export async function createQuestion(questionData: any) {
 }
 
 export async function updateQuestion(id: number, questionData: any) {
-  const { topicId, ...rest } = questionData;
-  const body = {
-    ...rest,
-    topic: topicId ? { id: topicId } : null
-  };
+  const body = { ...questionData };
+  if (questionData.topicId && !questionData.topic) {
+    body.topic = { id: questionData.topicId };
+    delete body.topicId;
+  }
   const response = await fetch(`${API_BASE_URL}/questions/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),

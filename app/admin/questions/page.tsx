@@ -58,6 +58,7 @@ export default function AdminQuestions() {
 
   // Modal / Form State
   const [showModal, setShowModal] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<number | null>(null);
   const [editingQuestionId, setEditingQuestionId] = useState<number | null>(null);
   const [qText, setQText] = useState('');
   const [explanation, setExplanation] = useState('');
@@ -158,11 +159,12 @@ export default function AdminQuestions() {
     }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm("Are you sure you want to delete this question? This cannot be undone.")) return;
+  async function confirmDelete() {
+    if (!questionToDelete) return;
     try {
-      await deleteQuestion(id);
-      if (selectedTopicId) loadQuestions(selectedTopicId);
+      await deleteQuestion(questionToDelete);
+      setQuestions(prev => prev.filter(q => q.id !== questionToDelete));
+      setQuestionToDelete(null);
     } catch (err) {
       alert("Failed to delete question");
     }
@@ -218,7 +220,7 @@ export default function AdminQuestions() {
                     <span className={pageStyles.qNum}>Question #{q.id}</span>
                     <div className={pageStyles.cardBtns}>
                       <button className={pageStyles.editBtn} onClick={() => openEditModal(q)}>Edit</button>
-                      <button className={pageStyles.deleteBtn} onClick={() => handleDelete(q.id)}>Delete</button>
+                      <button className={pageStyles.deleteBtn} onClick={() => setQuestionToDelete(q.id)}>Delete</button>
                     </div>
                   </div>
                   <p className={pageStyles.qText}>{q.questionText}</p>
@@ -282,6 +284,23 @@ export default function AdminQuestions() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+
+      {/* MODAL FOR DELETE CONFIRMATION */}
+      {questionToDelete && (
+        <div className={pageStyles.modalOverlay}>
+          <div className={pageStyles.modal} style={{ maxWidth: '400px', textAlign: 'center' }}>
+            <h2>Confirm Deletion</h2>
+            <p style={{ marginTop: '1rem', color: '#666' }}>Are you sure you want to delete this question? This action cannot be undone.</p>
+            <div className={pageStyles.modalActions} style={{ marginTop: '2rem', justifyContent: 'center', gap: '1rem' }}>
+              <button type="button" className={pageStyles.cancelBtn} onClick={() => setQuestionToDelete(null)}>Cancel</button>
+              <button type="button" className={pageStyles.submitBtn} style={{ backgroundColor: '#ef4444' }} onClick={confirmDelete}>
+                Yes, Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
