@@ -3,13 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fetchCourseById, fetchLessonsByCourse } from '../../../../utils/studentApi';
+import { fetchCourseById, fetchLessonsByCourse, fetchMyEnrollments } from '../../../../utils/studentApi';
 import styles from '../../../dashboard.module.css';
 
 interface Course {
   id: number;
   title: string;
   description: string;
+  exams?: {
+    id: number;
+    name: string;
+    description: string;
+  }[];
 }
 
 interface CourseLesson {
@@ -29,6 +34,7 @@ export default function StudentCourseView() {
   const [course, setCourse] = useState<Course | null>(null);
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     if (isNaN(courseId)) return;
@@ -37,6 +43,16 @@ export default function StudentCourseView() {
 
   async function loadCourseDetails() {
     try {
+      // First verify enrollment
+      const enrollments = await fetchMyEnrollments();
+      const enrollment = enrollments.find((e: any) => e.course.id === courseId);
+      
+      if (!enrollment || (enrollment.status !== 'ACTIVE' && enrollment.status !== 'COMPLETED')) {
+        setAccessDenied(true);
+        setLoading(false);
+        return;
+      }
+
       const [courseData, lessonData] = await Promise.all([
         fetchCourseById(courseId),
         fetchLessonsByCourse(courseId)
@@ -55,6 +71,7 @@ export default function StudentCourseView() {
   }
 
   if (loading) return <div className={styles.loader}>Loading course content...</div>;
+  if (accessDenied) return <div className={styles.container}><h2>Access Denied. You are not actively enrolled in this course.</h2><Link href="/student" style={{color: '#a78bfa'}}>Return to Dashboard</Link></div>;
   if (!course) return <div className={styles.container}><h2>Course not found</h2></div>;
 
   return (
@@ -115,6 +132,44 @@ export default function StudentCourseView() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* EXAMS SECTION */}
+        {course.exams && course.exams.length > 0 && (
+          <>
+            <div className={styles.sectionHeader} style={{ marginTop: '4rem' }}>
+              <h2>Course Exams</h2>
+              <p>Test your knowledge with these exams to earn your certification.</p>
+            </div>
+            <div className={styles.cardGrid}>
+              {course.exams.map((exam) => (
+                <div key={exam.id} className={styles.card} onClick={() => router.push(`/student/exams/${exam.id}`)}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem' }}>
+                    <div style={{ 
+                      width: '48px', height: '48px', 
+                      borderRadius: '12px', background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%)', 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#eab308', fontSize: '1.2rem', fontWeight: 'bold', border: '1px solid rgba(234,179,8,0.2)'
+                    }}>
+                      ⭐
+                    </div>
+                    <h3 style={{ margin: 0, fontSize: '1.3rem', flex: 1 }}>
+                      {exam.name}
+                    </h3>
+                  </div>
+                  
+                  <p style={{ color: '#94a3b8', fontSize: '0.95rem', flex: 1 }}>
+                    {exam.description || 'Take this exam to test your mastery of the course material.'}
+                  </p>
+                  
+                  <div className={styles.cardFooter} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#eab308' }}>Take Exam</span>
+                    <span style={{ fontSize: '1.2rem', color: '#eab308' }}>&rarr;</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </main>
     </div>

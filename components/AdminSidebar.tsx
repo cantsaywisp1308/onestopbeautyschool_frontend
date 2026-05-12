@@ -63,6 +63,9 @@ export default function AdminSidebar() {
             </button>
             
             <div className={`${styles.sectionItems} ${academicsOpen ? styles.sectionOpen : ''}`}>
+              <Link href="/admin/students" className={`${styles.subMenuItem} ${pathname === '/admin/students' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                Student Directory
+              </Link>
               <Link href="/admin/lessons" className={`${styles.subMenuItem} ${pathname === '/admin/lessons' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                 Global Lesson Bank
               </Link>

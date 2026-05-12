@@ -363,11 +363,11 @@ export async function enrollStudent(studentId: number, courseId: number) {
   return safeJson(response);
 }
 
-export async function updateEnrollmentStatus(enrollmentId: number, status: string) {
+export async function updateEnrollmentStatus(enrollmentId: number, status: string, unenrollmentReason?: string) {
   const response = await fetch(`${API_BASE_URL}/enrollments/${enrollmentId}/status`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
-    body: JSON.stringify({ status })
+    body: JSON.stringify({ status, unenrollmentReason })
   });
   return safeJson(response);
 }
@@ -383,6 +383,16 @@ export async function deleteEnrollment(enrollmentId: number) {
 /** USERS / STUDENTS */
 export async function fetchAllStudents() {
   const response = await fetch(`${API_BASE_URL}/user/students`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
+export async function fetchAllAdminStudents() {
+  const response = await fetch(`${API_BASE_URL}/admin/students`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
+export async function fetchAdminStudentDetails(studentId: number) {
+  const response = await fetch(`${API_BASE_URL}/admin/students/${studentId}/details`, { headers: getAuthHeaders() });
   return safeJson(response);
 }
 

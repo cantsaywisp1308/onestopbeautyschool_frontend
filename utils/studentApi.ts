@@ -98,6 +98,15 @@ export async function createCheckoutSession(courseId: number) {
   return safeJson(response, "Failed to create checkout session");
 }
 
+export async function verifyPaymentSession(sessionId: string) {
+  const response = await fetch(`${API_BASE_URL}/payments/verify-session?sessionId=${sessionId}`, {
+    method: 'GET',
+    headers: getAuthHeaders()
+  });
+  if (!response.ok) throw new Error("Failed to verify payment session");
+  return response.text();
+}
+
 export async function fetchActiveExams() {
   const response = await fetch(`${API_BASE_URL}/exams/active`, { headers: getAuthHeaders() });
   return safeJson(response, "Failed to fetch active exams");
@@ -134,7 +143,7 @@ export async function fetchSectionsByLesson(lessonId: number) {
 }
 
 export async function startOrResumeExam(examId: number) {
-  const response = await fetch(`${API_BASE_URL}/exams/${examId}/start`, { 
+  const response = await fetch(`${API_BASE_URL}/attempts/exams/${examId}/start`, { 
     method: 'POST', 
     headers: getAuthHeaders() 
   });

@@ -63,7 +63,7 @@ export default function AdminLayout({
   return (
     <>
       <AdminSidebar />
-      <div style={{ paddingLeft: '0' }}>{children}</div>
+      <div style={{ paddingLeft: '4.5rem' }}>{children}</div>
     </>
   );
 }

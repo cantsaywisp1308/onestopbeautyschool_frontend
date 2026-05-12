@@ -35,6 +35,12 @@ export default function CourseStudents() {
   const [availableStudents, setAvailableStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // UI States
+  const [statusFilter, setStatusFilter] = useState('ACTIVE');
+  const [unenrollModalOpen, setUnenrollModalOpen] = useState(false);
+  const [enrollmentToDrop, setEnrollmentToDrop] = useState<number | null>(null);
+  const [dropReason, setDropReason] = useState('Refund Requested');
 
   // Debounce search effect
   useEffect(() => {
@@ -83,17 +89,30 @@ export default function CourseStudents() {
     } catch (err) { alert(err); }
   }
 
-  async function handleUnenroll(id: number) {
-    if (confirm("Remove student from this course?")) {
-      try {
-        await deleteEnrollment(id);
-        loadData();
-      } catch (err) { alert(err); }
-    }
+  function handleUnenrollClick(id: number) {
+    setEnrollmentToDrop(id);
+    setDropReason('Refund Requested');
+    setUnenrollModalOpen(true);
+  }
+
+  async function confirmDrop() {
+    if (!enrollmentToDrop) return;
+    try {
+      await updateEnrollmentStatus(enrollmentToDrop, 'DROPPED', dropReason);
+      setUnenrollModalOpen(false);
+      loadData();
+    } catch (err) { alert(err); }
   }
 
   async function handleStatusChange(id: number, status: string) {
     try {
+      if (status === 'DROPPED' || status === 'REFUNDED') {
+        // If they select dropped from the dropdown, force them to use the modal instead
+        setEnrollmentToDrop(id);
+        setDropReason('Other');
+        setUnenrollModalOpen(true);
+        return;
+      }
       await updateEnrollmentStatus(id, status);
       loadData();
     } catch (err) { alert(err); }
@@ -102,13 +121,33 @@ export default function CourseStudents() {
   const enrolledIds = enrollments.map(e => e.student.id);
   const displayStudents = availableStudents.filter(s => !enrolledIds.includes(s.id));
 
+  const filteredEnrollments = enrollments.filter(e => {
+    if (statusFilter === 'ALL') return true;
+    return (e.status || 'ACTIVE') === statusFilter;
+  });
+
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
         <Link href="/admin/courses">Courses</Link> / {course?.title} / Students
       </div>
 
-      <h1 className={styles.title}>Manage Enrollments</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 className={styles.title} style={{ margin: 0 }}>Manage Enrollments</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Filter Status:</span>
+          <select 
+            value={statusFilter} 
+            onChange={e => setStatusFilter(e.target.value)}
+            style={{ background: '#1e293b', color: 'white', border: '1px solid #334155', padding: '0.5rem', borderRadius: '8px' }}
+          >
+            <option value="ACTIVE">Active Students</option>
+            <option value="COMPLETED">Graduates (Completed)</option>
+            <option value="DROPPED">Dropped / Refunded</option>
+            <option value="ALL">View All</option>
+          </select>
+        </div>
+      </div>
 
       <div className={styles.enrollBox}>
         <h3>Enroll a Student</h3>
@@ -148,40 +187,81 @@ export default function CourseStudents() {
       {loading ? (
         <div className={styles.loader}>Loading...</div>
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Student Name</th>
-              <th>Email</th>
-              <th>Enrollment Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {enrollments.map(e => (
-              <tr key={e.id}>
-                <td>{e.student.firstName} {e.student.lastName}</td>
-                <td>{e.student.email}</td>
-                <td>{new Date(e.enrollmentDate).toLocaleDateString()}</td>
-                <td>
-                  <select 
-                    value={e.status || 'ACTIVE'} 
-                    className={styles.statusSelect}
-                    onChange={(ev) => handleStatusChange(e.id, ev.target.value)}
-                  >
-                    <option value="ACTIVE">Active</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="DROPPED">Dropped</option>
-                  </select>
-                </td>
-                <td>
-                  <button onClick={() => handleUnenroll(e.id)} className={styles.removeButton}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          {filteredEnrollments.length === 0 ? (
+            <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
+              No students found with status "{statusFilter}".
+            </p>
+          ) : (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Email</th>
+                  <th>Enrollment Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEnrollments.map(e => (
+                  <tr key={e.id}>
+                    <td>{e.student.firstName} {e.student.lastName}</td>
+                    <td>{e.student.email}</td>
+                    <td>{new Date(e.enrollmentDate).toLocaleDateString()}</td>
+                    <td>
+                      <select 
+                        value={e.status || 'ACTIVE'} 
+                        className={styles.statusSelect}
+                        onChange={(ev) => handleStatusChange(e.id, ev.target.value)}
+                      >
+                        <option value="ACTIVE">Active</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="DROPPED">Dropped</option>
+                        <option value="REFUNDED">Refunded</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button onClick={() => handleUnenrollClick(e.id)} className={styles.removeButton}>Remove</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
+      )}
+
+      {/* UNENROLLMENT MODAL */}
+      {unenrollModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ maxWidth: '400px', background: '#1e293b', padding: '2rem', borderRadius: '16px', border: '1px solid #334155' }}>
+            <h2>Confirm Removal</h2>
+            <p style={{ margin: '1rem 0', color: '#94a3b8', fontSize: '0.9rem' }}>
+              Please select a reason for dropping this student. This will be recorded for auditing purposes.
+            </p>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#cbd5e1' }}>Reason for Dropping:</label>
+              <select 
+                value={dropReason}
+                onChange={(e) => setDropReason(e.target.value)}
+                style={{ width: '100%', padding: '0.75rem', background: '#0f172a', border: '1px solid #334155', color: 'white', borderRadius: '8px' }}
+              >
+                <option value="Refund Requested">Refund Requested</option>
+                <option value="Accidental Enrollment">Accidental Enrollment</option>
+                <option value="Violated Terms of Service">Violated Terms of Service</option>
+                <option value="Transferred to Another Course">Transferred to Another Course</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => setUnenrollModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #334155', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={confirmDrop} style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Drop Student</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

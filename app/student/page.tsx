@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import Link from 'next/link';
-import { fetchMyEnrollments } from '../../utils/studentApi';
+import { fetchMyEnrollments, verifyPaymentSession } from '../../utils/studentApi';
 import LogoutModal from '../../components/LogoutModal';
 import styles from '../dashboard.module.css';
 
@@ -29,6 +29,7 @@ interface Enrollment {
 
 export default function StudentDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,12 +45,27 @@ export default function StudentDashboard() {
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       setIsAuthorized(true);
-      loadEnrollments();
+      
+      const sessionId = searchParams.get('session_id');
+      const paymentStatus = searchParams.get('payment');
+      
+      if (paymentStatus === 'success' && sessionId) {
+        verifyPaymentSession(sessionId).then(() => {
+          // Clear query params
+          router.replace('/student');
+          loadEnrollments();
+        }).catch(err => {
+          console.error("Verification failed", err);
+          loadEnrollments();
+        });
+      } else {
+        loadEnrollments();
+      }
     } catch (e) {
       localStorage.removeItem('token');
       router.push('/login');
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   async function loadEnrollments() {
     try {
@@ -125,21 +141,23 @@ export default function StudentDashboard() {
           {loading ? (
             <p>Loading courses...</p>
           ) : (
-            enrollments.map(enrollment => (
-              <Link 
-                key={enrollment.id} 
-                href={`/student/courses/${enrollment.course.id}`}
-                className={styles.card}
-              >
-                <h3>{enrollment.course.title}</h3>
-                <p>{enrollment.course.description || "Course materials and lessons."}</p>
-                <div className={styles.cardFooter}>
-                  <span>Enter Course &rarr;</span>
-                </div>
-              </Link>
-            ))
+            enrollments
+              .filter(e => e.status === 'ACTIVE' || e.status === 'COMPLETED')
+              .map(enrollment => (
+                <Link 
+                  key={enrollment.id} 
+                  href={`/student/courses/${enrollment.course.id}`}
+                  className={styles.card}
+                >
+                  <h3>{enrollment.course.title}</h3>
+                  <p>{enrollment.course.description || "Course materials and lessons."}</p>
+                  <div className={styles.cardFooter}>
+                    <span>Enter Course &rarr;</span>
+                  </div>
+                </Link>
+              ))
           )}
-          {!loading && enrollments.length === 0 && <p>You are not enrolled in any courses yet. Please contact an administrator.</p>}
+          {!loading && enrollments.filter(e => e.status === 'ACTIVE' || e.status === 'COMPLETED').length === 0 && <p>You are not enrolled in any courses yet. Please contact an administrator.</p>}
         </div>
 
         <div className={styles.sectionHeader} style={{marginTop: '3rem'}}>
