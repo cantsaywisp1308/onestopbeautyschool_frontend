@@ -3,12 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { fetchSectionsByLesson, createSection, updateSection, deleteSection, fetchLessonById, fetchTopics, addTopicToLesson, removeTopicFromLesson, fetchLessonTopics } from '../../../../../utils/adminApi';
+import RichTextEditor from '../../../../../components/RichTextEditor';
+import { fetchSectionsByLesson, createSection, updateSection, deleteSection, fetchLessonById, fetchTopics, addTopicToLesson, removeTopicFromLesson, fetchLessonTopics, uploadMedia } from '../../../../../utils/adminApi';
 import styles from './sections.module.css';
-
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
-import 'react-quill-new/dist/quill.snow.css';
 
 interface Section {
   id: number;
@@ -114,6 +111,15 @@ export default function SectionBuilder() {
       } catch (err) { alert(err); }
     }
   }
+  async function handleImageUpload(file: File) {
+    try {
+      const { url } = await uploadMedia(file, 'sections');
+      setFormData({ ...formData, imageUrl: url });
+    } catch (err) {
+      alert("Failed to upload image: " + err);
+    }
+  }
+
   function getEmbedUrl(url: string) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -248,19 +254,37 @@ export default function SectionBuilder() {
                 </div>
               </div>
               <div className={styles.field}>
-                <label>Text Content</label>
-                <div style={{ backgroundColor: 'white', color: 'black', borderRadius: '8px', overflow: 'hidden' }}>
-                  <ReactQuill 
-                    theme="snow" 
-                    value={formData.textContent} 
-                    onChange={val => setFormData({...formData, textContent: val})} 
-                    style={{ height: '200px', marginBottom: '40px' }}
-                  />
-                </div>
+                <label>Rich Text Content (Text, Tables, Images)</label>
+                <RichTextEditor 
+                  content={formData.textContent} 
+                  onChange={val => setFormData({...formData, textContent: val})}
+                  folder="sections"
+                />
               </div>
               <div className={styles.field}>
-                <label>Image URL (Optional)</label>
-                <input value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} placeholder="https://..." />
+                <label>Main Section Image (Optional)</label>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <input 
+                    value={formData.imageUrl} 
+                    onChange={e => setFormData({...formData, imageUrl: e.target.value})} 
+                    placeholder="https://..." 
+                    style={{ flex: 1 }}
+                  />
+                  <input 
+                    type="file" 
+                    id="section-image-upload" 
+                    hidden 
+                    onChange={e => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => document.getElementById('section-image-upload')?.click()}
+                    className={styles.editBtn}
+                    style={{ padding: '0.5rem 1rem' }}
+                  >
+                    Upload
+                  </button>
+                </div>
               </div>
               <div className={styles.field}>
                 <label>Video URL (Optional YouTube Link)</label>

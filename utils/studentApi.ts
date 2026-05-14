@@ -12,8 +12,8 @@ const getAuthHeaders = () => {
 };
 
 /** Helper for safe JSON parsing and error handling */
-const safeJson = async (response: Response, errorMessage: string) => {
-  if (response.status === 401 || response.status === 403) {
+const safeJson = async (response: Response, errorMessage: string, isPublic: boolean = false) => {
+  if (!isPublic && (response.status === 401 || response.status === 403)) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('token');
       window.location.href = '/login?expired=true';
@@ -87,7 +87,7 @@ export async function fetchMyAttempts() {
 
 export async function fetchAllCourses() {
   const response = await fetch(`${API_BASE_URL}/courses`);
-  return safeJson(response, "Failed to fetch courses");
+  return safeJson(response, "Failed to fetch courses", true);
 }
 
 export async function createCheckoutSession(courseId: number) {
@@ -163,4 +163,9 @@ export async function fetchLessonsByCourse(courseId: number) {
 export async function fetchLessonTopics(lessonId: number) {
   const response = await fetch(`${API_BASE_URL}/lessons/${lessonId}/topics`, { headers: getAuthHeaders() });
   return safeJson(response, "Failed to fetch practice topics for lesson");
+}
+
+export async function fetchPublicEvents() {
+  const response = await fetch(`${API_BASE_URL}/events`);
+  return safeJson(response, "Failed to fetch events", true);
 }

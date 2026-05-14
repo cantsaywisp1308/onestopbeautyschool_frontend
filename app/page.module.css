@@ -500,8 +500,16 @@
 .eventInfo p {
   color: #94a3b8;
   line-height: 1.7;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 1rem;
+}
+
+.eventLoc {
+  display: block;
+  font-size: 0.9rem;
+  color: #a78bfa !important;
+  margin-bottom: 1.5rem !important;
+  font-weight: 600;
 }
 
 .eventButton {

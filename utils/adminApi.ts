@@ -406,4 +406,50 @@ export async function fetchDashboardMetrics() {
   return safeJson(response);
 }
 
+export async function uploadMedia(file: File, folder: string = 'general') {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', folder);
 
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/media/upload`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+  return safeJson(response);
+}
+
+/** EVENTS */
+export async function fetchEvents() {
+  const response = await fetch(`${API_BASE_URL}/events`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
+export async function createEvent(eventData: any) {
+  const response = await fetch(`${API_BASE_URL}/events`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(eventData)
+  });
+  return safeJson(response);
+}
+
+export async function updateEvent(id: number, eventData: any) {
+  const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(eventData)
+  });
+  return safeJson(response);
+}
+
+export async function deleteEvent(id: number) {
+  const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  if (!response.ok) throw new Error("Failed to delete event");
+}

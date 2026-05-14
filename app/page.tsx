@@ -5,29 +5,49 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import styles from './page.module.css';
+import { fetchPublicEvents } from '../utils/studentApi';
 
 export default function Home() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dashboardUrl, setDashboardUrl] = useState('/login');
+  const [events, setEvents] = useState<any[]>([]);
   const [pastEventIndex, setPastEventIndex] = useState(0);
 
-  const pastEventImages = [
-    '/events/past1.png',
-    '/events/past2.png',
-    '/events/past3.png'
-  ];
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  async function loadEvents() {
+    try {
+      const data = await fetchPublicEvents();
+      setEvents(data);
+    } catch (err) { console.error(err); }
+  }
+
+  const now = new Date();
+  const upcomingEvents = events.filter(e => new Date(e.eventDate) >= now).sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+  const pastEvents = events.filter(e => new Date(e.eventDate) < now).sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+
+  // Use real images from past events for the carousel, or fallback to defaults
+  const pastEventImages = pastEvents.flatMap(e => e.imageUrls).filter(url => !!url).slice(0, 5);
+  if (pastEventImages.length === 0) {
+    pastEventImages.push('/events/past1.png', '/events/past2.png');
+  }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPastEventIndex((prev) => (prev + 1) % pastEventImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    if (pastEventImages.length > 1) {
+      const interval = setInterval(() => {
+        setPastEventIndex((prev) => (prev + 1) % pastEventImages.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [pastEventImages.length]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+// ... rest of the code ...
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
@@ -142,22 +162,42 @@ export default function Home() {
 
           <div className={styles.eventsGrid}>
             {/* Upcoming Event */}
-            <div className={styles.eventCard}>
-              <div className={styles.eventBadge}>Upcoming</div>
-              <div className={styles.eventImageWrapper}>
-                <img src="/events/upcoming.png" alt="Upcoming Event" className={styles.eventImage} />
-                <div className={styles.eventDate}>MAY 25</div>
+            {upcomingEvents.length > 0 ? (
+              <div className={styles.eventCard}>
+                <div className={styles.eventBadge}>Upcoming</div>
+                <div className={styles.eventImageWrapper}>
+                  <img 
+                    src={upcomingEvents[0].imageUrls?.[0] || "/events/upcoming.png"} 
+                    alt={upcomingEvents[0].title} 
+                    className={styles.eventImage} 
+                  />
+                  <div className={styles.eventDate}>
+                    {new Date(upcomingEvents[0].eventDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}
+                  </div>
+                </div>
+                <div className={styles.eventInfo}>
+                  <h3>{upcomingEvents[0].title}</h3>
+                  <p>{upcomingEvents[0].description || "Join us for our next exciting school event!"}</p>
+                  <p className={styles.eventLoc}>📍 {upcomingEvents[0].location}</p>
+                  <button className={styles.eventButton}>Learn More</button>
+                </div>
               </div>
-              <div className={styles.eventInfo}>
-                <h3>Masterclass: Bridal Makeup</h3>
-                <p>Join us for an exclusive demonstration of the latest bridal makeup trends by a guest celebrity artist.</p>
-                <button className={styles.eventButton}>Learn More</button>
+            ) : (
+              <div className={styles.eventCard}>
+                <div className={styles.eventBadge}>Stay Tuned</div>
+                <div className={styles.eventImageWrapper}>
+                  <img src="/events/upcoming.png" alt="Upcoming" className={styles.eventImage} />
+                </div>
+                <div className={styles.eventInfo}>
+                  <h3>New Events Coming Soon</h3>
+                  <p>We are currently planning our next workshops and seminars. Check back soon for updates!</p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Past Event Carousel */}
             <div className={styles.eventCard}>
-              <div className={styles.eventBadge} style={{ background: 'rgba(255,255,255,0.1)' }}>Past Highlights</div>
+              <div className={styles.eventBadge} style={{ background: 'rgba(255,255,255,0.1)' }}>Recent Highlights</div>
               <div className={styles.eventImageWrapper}>
                 {pastEventImages.map((src, idx) => (
                   <img 
@@ -175,7 +215,7 @@ export default function Home() {
               </div>
               <div className={styles.eventInfo}>
                 <h3>Celebrating Our Journey</h3>
-                <p>A look back at our recent graduation ceremony, student workshops, and community gatherings.</p>
+                <p>A look back at our recent graduation ceremonies, student workshops, and community gatherings.</p>
                 <button className={styles.eventButton} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)' }}>View Gallery</button>
               </div>
             </div>

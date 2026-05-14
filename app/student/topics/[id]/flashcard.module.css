@@ -52,6 +52,21 @@
   font-weight: 600;
 }
 
+.questionImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.qImg {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 16px;
+  object-fit: contain;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
 .optionsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;

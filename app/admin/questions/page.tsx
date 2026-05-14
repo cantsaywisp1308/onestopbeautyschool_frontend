@@ -7,7 +7,8 @@ import {
   fetchQuestionsByTopic, 
   createQuestion, 
   updateQuestion, 
-  deleteQuestion 
+  deleteQuestion,
+  uploadMedia
 } from '../../../utils/adminApi';
 import { jwtDecode } from 'jwt-decode';
 import LogoutModal from '../../../components/LogoutModal';
@@ -68,6 +69,8 @@ export default function AdminQuestions() {
     { optionText: '', correct: false },
     { optionText: '', correct: false },
   ]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     loadTopics();
@@ -107,6 +110,7 @@ export default function AdminQuestions() {
       { optionText: '', correct: false },
       { optionText: '', correct: false },
     ]);
+    setImageUrls([]);
   };
 
   const openEditModal = (q: any) => {
@@ -127,6 +131,7 @@ export default function AdminQuestions() {
     }
     
     setOptions(mappedOptions);
+    setImageUrls(q.imageUrls || []);
     setShowModal(true);
   };
 
@@ -138,7 +143,8 @@ export default function AdminQuestions() {
       questionText: qText,
       generalExplanation: explanation,
       topic: { id: selectedTopicId },
-      options: options.filter(o => o.optionText.trim() !== '')
+      options: options.filter(o => o.optionText.trim() !== ''),
+      imageUrls: imageUrls
     };
 
     try {
@@ -178,6 +184,25 @@ export default function AdminQuestions() {
     const newOptions = [...options];
     newOptions[index].optionText = text;
     setOptions(newOptions);
+  };
+  
+  const handleAddImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const { url } = await uploadMedia(file, 'questions');
+      setImageUrls([...imageUrls, url]);
+    } catch (err) {
+      alert("Upload failed: " + err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImageUrls(imageUrls.filter((_, i) => i !== index));
   };
 
   return (
@@ -224,6 +249,15 @@ export default function AdminQuestions() {
                     </div>
                   </div>
                   <p className={pageStyles.qText}>{q.questionText}</p>
+                  
+                  {q.imageUrls && q.imageUrls.length > 0 && (
+                    <div className={pageStyles.qImages}>
+                      {q.imageUrls.map((url: string, i: number) => (
+                        <img key={i} src={url} alt={`Question ${q.id} image ${i+1}`} className={pageStyles.qImgPreview} />
+                      ))}
+                    </div>
+                  )}
+
                   <div className={pageStyles.optionsGrid}>
                     {q.options?.map((opt: any) => (
                       <div key={opt.id} className={`${pageStyles.option} ${opt.correct ? pageStyles.correct : ''}`}>
@@ -275,6 +309,24 @@ export default function AdminQuestions() {
               <div className={pageStyles.inputGroup}>
                 <label>General Explanation (Shown after exam)</label>
                 <textarea value={explanation} onChange={e => setExplanation(e.target.value)} />
+              </div>
+
+              <div className={pageStyles.inputGroup}>
+                <label>Question Images</label>
+                <div className={pageStyles.imageUploadArea}>
+                  <div className={pageStyles.imageList}>
+                    {imageUrls.map((url, i) => (
+                      <div key={i} className={pageStyles.imageItem}>
+                        <img src={url} alt="Question" />
+                        <button type="button" onClick={() => removeImage(i)} className={pageStyles.removeImgBtn}>×</button>
+                      </div>
+                    ))}
+                    <label className={pageStyles.addImgBtn}>
+                      {isUploading ? '...' : '+'}
+                      <input type="file" hidden onChange={handleAddImage} disabled={isUploading} accept="image/*" />
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className={pageStyles.modalActions}>

@@ -1,0 +1,101 @@
+.editorContainer {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: #1a1523;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toolbar button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.toolbar button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.toolbar button.active {
+  background: #ec4899;
+  color: white;
+  border-color: #ec4899;
+}
+
+.editorContent {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  color: #fff;
+}
+
+.editorContent :global(.ProseMirror) {
+  outline: none;
+  min-height: 150px;
+}
+
+.editorContent :global(.ProseMirror p) {
+  margin-bottom: 1rem;
+}
+
+.editorContent :global(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  float: left;
+  color: #64748b;
+  pointer-events: none;
+  height: 0;
+}
+
+.editorContent :global(.ProseMirror img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.editorContent :global(.ProseMirror table) {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.editorContent :global(.ProseMirror td),
+.editorContent :global(.ProseMirror th) {
+  min-width: 1em;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.editorContent :global(.ProseMirror th) {
+  font-weight: bold;
+  text-align: left;
+  background-color: rgba(236, 72, 153, 0.1);
+  color: #ec4899;
+}

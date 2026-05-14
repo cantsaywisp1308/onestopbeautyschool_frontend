@@ -11,6 +11,7 @@ interface Question {
   id: number;
   questionText: string;
   generalExplanation: string;
+  imageUrls: string[];
   options: {
     id: number;
     optionText: string;
@@ -185,6 +186,14 @@ export default function TopicPractice({ params }: { params: Promise<{ id: string
         <div className={cardStyles.questionText}>
           {currentQuestion.questionText}
         </div>
+
+        {currentQuestion.imageUrls && currentQuestion.imageUrls.length > 0 && (
+          <div className={cardStyles.questionImages}>
+            {currentQuestion.imageUrls.map((url, i) => (
+              <img key={i} src={url} alt={`Question visual ${i+1}`} className={cardStyles.qImg} />
+            ))}
+          </div>
+        )}
 
         <div className={cardStyles.optionsGrid}>
           {currentQuestion.options.map((option) => {
