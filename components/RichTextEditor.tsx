@@ -102,8 +102,18 @@ const RichTextEditor = ({ content, onChange, placeholder = 'Start typing...', fo
           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
           type="button"
         >
-          Table
+          Insert Table
         </button>
+
+        {editor.isActive('table') && (
+          <div className={styles.tableControls}>
+            <button onClick={() => editor.chain().focus().addColumnAfter().run()} type="button" title="Add Column After">Col+</button>
+            <button onClick={() => editor.chain().focus().addRowAfter().run()} type="button" title="Add Row After">Row+</button>
+            <button onClick={() => editor.chain().focus().deleteColumn().run()} type="button" title="Delete Column">Col-</button>
+            <button onClick={() => editor.chain().focus().deleteRow().run()} type="button" title="Delete Row">Row-</button>
+            <button onClick={() => editor.chain().focus().deleteTable().run()} type="button" title="Delete Table" className={styles.dangerBtn}>Del Table</button>
+          </div>
+        )}
       </div>
       <EditorContent editor={editor} className={styles.editorContent} />
     </div>

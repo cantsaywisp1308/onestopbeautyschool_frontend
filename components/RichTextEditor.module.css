@@ -99,3 +99,21 @@
   background-color: rgba(236, 72, 153, 0.1);
   color: #ec4899;
 }
+
+.tableControls {
+  display: flex;
+  gap: 0.25rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tableControls button {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.75rem !important;
+}
+
+.dangerBtn:hover {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: white !important;
+}
