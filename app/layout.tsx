@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "One Stop Beauty School",
   description: "The ultimate platform for beauty education and certification.",
+  icons: {
+    icon: '/favicon.ico?v=2',
+  },
 };
 
 import { Providers } from "@/components/Providers";
