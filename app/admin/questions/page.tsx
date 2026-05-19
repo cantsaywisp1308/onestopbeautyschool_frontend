@@ -71,6 +71,7 @@ export default function AdminQuestions() {
   ]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [modalTopicId, setModalTopicId] = useState<number | null>(null);
 
   useEffect(() => {
     loadTopics();
@@ -111,6 +112,7 @@ export default function AdminQuestions() {
       { optionText: '', correct: false },
     ]);
     setImageUrls([]);
+    setModalTopicId(selectedTopicId);
   };
 
   const openEditModal = (q: any) => {
@@ -132,17 +134,18 @@ export default function AdminQuestions() {
     
     setOptions(mappedOptions);
     setImageUrls(q.imageUrls || []);
+    setModalTopicId(q.topic?.id || selectedTopicId);
     setShowModal(true);
   };
 
   async function handleSaveQuestion(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedTopicId) return;
+    if (!modalTopicId) return;
 
     const payload = {
       questionText: qText,
       generalExplanation: explanation,
-      topic: { id: selectedTopicId },
+      topic: { id: modalTopicId },
       options: options.filter(o => o.optionText.trim() !== ''),
       imageUrls: imageUrls
     };
@@ -280,6 +283,19 @@ export default function AdminQuestions() {
           <div className={pageStyles.modal}>
             <h2>{editingQuestionId ? 'Edit Question' : 'Create New Question'}</h2>
             <form onSubmit={handleSaveQuestion}>
+              <div className={pageStyles.inputGroup}>
+                <label>Assigned Topic</label>
+                <select 
+                  value={modalTopicId || ''} 
+                  onChange={e => setModalTopicId(Number(e.target.value))}
+                  required
+                  style={{ width: '100%', padding: '0.75rem', background: '#000', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                >
+                  <option value="" disabled>Select a topic</option>
+                  {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+
               <div className={pageStyles.inputGroup}>
                 <label>Question Text</label>
                 <textarea value={qText} onChange={e => setQText(e.target.value)} required />
