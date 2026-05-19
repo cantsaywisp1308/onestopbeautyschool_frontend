@@ -54,11 +54,13 @@ export async function fetchQuestionsByTopic(topicId: number) {
 }
 
 export async function createQuestion(questionData: any) {
-  // If topic is already provided as an object, use it directly. 
-  // Otherwise, fallback to checking topicId.
   const body = { ...questionData };
-  if (questionData.topicId && !questionData.topic) {
-    body.topic = { id: questionData.topicId };
+  if ('topicId' in questionData) {
+    if (questionData.topicId) {
+      body.topic = { id: questionData.topicId };
+    } else {
+      body.topic = null;
+    }
     delete body.topicId;
   }
   const response = await fetch(`${API_BASE_URL}/questions`, {
@@ -71,8 +73,12 @@ export async function createQuestion(questionData: any) {
 
 export async function updateQuestion(id: number, questionData: any) {
   const body = { ...questionData };
-  if (questionData.topicId && !questionData.topic) {
-    body.topic = { id: questionData.topicId };
+  if ('topicId' in questionData) {
+    if (questionData.topicId) {
+      body.topic = { id: questionData.topicId };
+    } else {
+      body.topic = null;
+    }
     delete body.topicId;
   }
   const response = await fetch(`${API_BASE_URL}/questions/${id}`, {
