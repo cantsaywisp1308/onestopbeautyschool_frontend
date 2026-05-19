@@ -162,7 +162,9 @@ export default function AdminQuestions() {
       }
       setShowModal(false);
       resetForm();
-      loadQuestions(selectedTopicId);
+      if (selectedTopicId) {
+        loadQuestions(selectedTopicId);
+      }
     } catch (err) {
       alert("Failed to save question");
     }
