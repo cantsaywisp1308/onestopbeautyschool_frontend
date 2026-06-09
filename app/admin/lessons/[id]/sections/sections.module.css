@@ -198,3 +198,19 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.lessonHighlight {
+  color: #60a5fa;
+  font-weight: 600;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  margin-left: 0.25rem;
+}
+

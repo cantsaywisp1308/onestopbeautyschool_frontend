@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { fetchAdminStudentDetails, updateEnrollmentStatus } from '../../../../utils/adminApi';
+import { fetchAdminStudentDetails, deleteEnrollment } from '../../../../utils/adminApi';
 import styles from '../../courses/courses.module.css';
 
 export default function StudentDetailedProfile() {
@@ -13,11 +13,6 @@ export default function StudentDetailedProfile() {
   const [studentDetails, setStudentDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('ACADEMIC'); // ACADEMIC, ENROLLMENTS, PROFILE
-
-  // Unenrollment Modal State
-  const [unenrollModalOpen, setUnenrollModalOpen] = useState(false);
-  const [enrollmentToDrop, setEnrollmentToDrop] = useState<number | null>(null);
-  const [dropReason, setDropReason] = useState('Refund Requested');
 
   useEffect(() => {
     if (studentId) {
@@ -37,32 +32,15 @@ export default function StudentDetailedProfile() {
     }
   }
 
-  function handleUnenrollClick(enrollmentId: number) {
-    setEnrollmentToDrop(enrollmentId);
-    setDropReason('Refund Requested');
-    setUnenrollModalOpen(true);
-  }
-
-  async function confirmDrop() {
-    if (!enrollmentToDrop) return;
-    try {
-      await updateEnrollmentStatus(enrollmentToDrop, 'DROPPED', dropReason);
-      setUnenrollModalOpen(false);
-      loadData();
-    } catch (err) { alert(err); }
-  }
-
-  async function handleStatusChange(enrollmentId: number, status: string) {
-    try {
-      if (status === 'DROPPED' || status === 'REFUNDED') {
-        setEnrollmentToDrop(enrollmentId);
-        setDropReason('Other');
-        setUnenrollModalOpen(true);
-        return;
+  async function handleRemoveEnrollment(enrollmentId: number, courseTitle: string) {
+    if (confirm(`Are you sure you want to permanently delete this student's enrollment in ${courseTitle}? This action cannot be undone.`)) {
+      try {
+        await deleteEnrollment(enrollmentId);
+        loadData();
+      } catch (err) {
+        alert(err);
       }
-      await updateEnrollmentStatus(enrollmentId, status);
-      loadData();
-    } catch (err) { alert(err); }
+    }
   }
 
   if (loading) return <div className={styles.container}><div className={styles.loader}>Loading student profile...</div></div>;
@@ -183,22 +161,21 @@ export default function StudentDetailedProfile() {
                       <td style={{ padding: '1rem', color: '#94a3b8' }}>{new Date(e.enrollmentDate).toLocaleDateString()}</td>
                       <td style={{ padding: '1rem', color: '#10b981' }}>${e.pricePaid?.toFixed(2) || '0.00'}</td>
                       <td style={{ padding: '1rem' }}>
-                        <select 
-                          value={e.status || 'ACTIVE'} 
-                          onChange={(ev) => handleStatusChange(e.id, ev.target.value)}
-                          style={{ background: '#0f172a', color: 'white', border: '1px solid #334155', padding: '0.4rem', borderRadius: '4px' }}
-                        >
-                          <option value="ACTIVE">Active</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="DROPPED">Dropped</option>
-                          <option value="REFUNDED">Refunded</option>
-                        </select>
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <button onClick={() => handleUnenrollClick(e.id)} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer' }}>
-                          Remove
-                        </button>
-                      </td>
+                        <span className={`${styles.statusBadge} ${
+                        e.status === 'ACTIVE' ? styles.statusActive :
+                        e.status === 'COMPLETED' ? styles.statusCompleted :
+                        e.status === 'DROPPED' ? styles.statusDropped :
+                        e.status === 'REFUNDED' ? styles.statusDropped :
+                        e.status === 'EXPIRED' ? styles.statusExpired : ''
+                      }`}>
+                        {e.status || 'ACTIVE'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <button onClick={() => handleRemoveEnrollment(e.id, e.course.title)} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer' }}>
+                        Remove
+                      </button>
+                    </td>
                     </tr>
                   ))}
                 </tbody>
@@ -245,39 +222,6 @@ export default function StudentDetailedProfile() {
         )}
 
       </div>
-
-      {/* UNENROLLMENT MODAL */}
-      {unenrollModalOpen && (
-        <div className={styles.modalOverlay} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div className={styles.modalContent} style={{ maxWidth: '400px', width: '100%', background: '#1e293b', padding: '2rem', borderRadius: '16px', border: '1px solid #334155' }}>
-            <h2>Confirm Removal</h2>
-            <p style={{ margin: '1rem 0', color: '#94a3b8', fontSize: '0.9rem' }}>
-              Please select a reason for dropping this student. This will be recorded for auditing purposes.
-            </p>
-            
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: '#cbd5e1' }}>Reason for Dropping:</label>
-              <select 
-                value={dropReason}
-                onChange={(e) => setDropReason(e.target.value)}
-                style={{ width: '100%', padding: '0.75rem', background: '#0f172a', border: '1px solid #334155', color: 'white', borderRadius: '8px' }}
-              >
-                <option value="Refund Requested">Refund Requested</option>
-                <option value="Accidental Enrollment">Accidental Enrollment</option>
-                <option value="Violated Terms of Service">Violated Terms of Service</option>
-                <option value="Transferred to Another Course">Transferred to Another Course</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setUnenrollModalOpen(false)} style={{ padding: '0.5rem 1rem', background: 'transparent', color: '#94a3b8', border: '1px solid #334155', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={confirmDrop} style={{ padding: '0.5rem 1rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Drop Student</button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

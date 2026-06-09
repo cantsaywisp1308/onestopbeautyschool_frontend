@@ -133,12 +133,19 @@ export default function SectionBuilder() {
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
-        <Link href="/admin/lessons">Global Lesson Bank</Link> / Section Builder
+        <Link href="/admin/lessons">Global Lesson Bank</Link> / {lesson ? `Lesson: ${lesson.title}` : 'Loading...'} / Section Builder
       </div>
 
-      <div className={styles.header}>
-        <h1 className={styles.title}>Section Builder</h1>
-        <button className={styles.addButton} onClick={() => openModal()}>+ Add Section</button>
+      <div className={styles.header} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <h1 className={styles.title}>Section Builder</h1>
+          <button className={styles.addButton} onClick={() => openModal()}>+ Add Section</button>
+        </div>
+        {lesson && (
+          <p className={styles.subtitle}>
+            Building sections for lesson: <span className={styles.lessonHighlight}>{lesson.title}</span>
+          </p>
+        )}
       </div>
 
       {loading ? (

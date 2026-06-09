@@ -84,6 +84,11 @@
   -webkit-text-fill-color: transparent;
 }
 
+.brandLink {
+  text-decoration: none;
+  display: inline-block;
+}
+
 .sidebarContent {
   flex: 1;
   overflow-y: auto;

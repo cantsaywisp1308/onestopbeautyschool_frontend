@@ -10,6 +10,7 @@ export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [academicsOpen, setAcademicsOpen] = useState(true);
   const [marketingOpen, setMarketingOpen] = useState(true);
+  const [operationsOpen, setOperationsOpen] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   
   const pathname = usePathname();
@@ -40,7 +41,9 @@ export default function AdminSidebar() {
       {/* Sidebar Drawer */}
       <div className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.brand}>OneStop Admin</div>
+          <Link href="/" className={styles.brandLink}>
+            <div className={styles.brand}>OneStop Admin</div>
+          </Link>
         </div>
 
         <div className={styles.sidebarContent}>
@@ -50,6 +53,14 @@ export default function AdminSidebar() {
             onClick={() => setIsOpen(false)}
           >
             Dashboard Home
+          </Link>
+
+          <Link 
+            href="/" 
+            className={styles.menuItem}
+            onClick={() => setIsOpen(false)}
+          >
+            View Website
           </Link>
 
           {/* Academics Section */}
@@ -100,6 +111,23 @@ export default function AdminSidebar() {
               </Link>
               <Link href="/admin/blog" className={`${styles.subMenuItem} ${pathname === '/admin/blog' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
                 Blog Posts
+              </Link>
+            </div>
+          </div>
+
+          {/* Operations & Finance Section */}
+          <div className={styles.section}>
+            <button 
+              className={styles.sectionToggle} 
+              onClick={() => setOperationsOpen(!operationsOpen)}
+            >
+              <span className={styles.sectionTitle}>Operations & Finance</span>
+              <span className={styles.chevron}>{operationsOpen ? '▼' : '▶'}</span>
+            </button>
+            
+            <div className={`${styles.sectionItems} ${operationsOpen ? styles.sectionOpen : ''}`}>
+              <Link href="/admin/billing" className={`${styles.subMenuItem} ${pathname === '/admin/billing' ? styles.active : ''}`} onClick={() => setIsOpen(false)}>
+                Billing Audit Log
               </Link>
             </div>
           </div>

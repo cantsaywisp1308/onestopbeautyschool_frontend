@@ -102,8 +102,23 @@ function StudentDashboardContent() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.brand}>OneStop Student</div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div className={styles.brand}>OneStop Student</div>
+        </Link>
+        <div style={{ display: 'flex', gap: '1.25rem' }}>
+          <Link href="/" style={{ 
+            textDecoration: 'none', 
+            color: '#94a3b8', 
+            alignSelf: 'center', 
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#a78bfa'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+          >
+            Main Website
+          </Link>
           <Link href="/student/progress" style={{ 
             textDecoration: 'none', 
             color: '#a78bfa', 
@@ -121,6 +136,15 @@ function StudentDashboardContent() {
             fontWeight: '600'
           }}>
             My Profile
+          </Link>
+          <Link href="/student/billing" style={{ 
+            textDecoration: 'none', 
+            color: '#a78bfa', 
+            alignSelf: 'center', 
+            fontSize: '0.9rem',
+            fontWeight: '600'
+          }}>
+            Billing & Receipts
           </Link>
           <button className={styles.logoutButton} onClick={toggleLogoutModal}>
             Log Out

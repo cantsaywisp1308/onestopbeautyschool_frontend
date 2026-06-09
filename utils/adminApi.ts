@@ -182,7 +182,7 @@ export async function fetchExamQuestions(examId: number) {
 
 /** COURSES */
 export async function fetchCourses() {
-  const response = await fetch(`${API_BASE_URL}/courses`, { headers: getAuthHeaders() });
+  const response = await fetch(`${API_BASE_URL}/courses/admin`, { headers: getAuthHeaders() });
   return safeJson(response);
 }
 
@@ -458,4 +458,43 @@ export async function deleteEvent(id: number) {
     headers: getAuthHeaders()
   });
   if (!response.ok) throw new Error("Failed to delete event");
+}
+
+/** PRICING OPTIONS */
+export async function fetchPricingOptions(courseId: number) {
+  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/pricing-options`, { headers: getAuthHeaders() });
+  return safeJson(response);
+}
+
+export async function createPricingOption(courseId: number, optionData: { name: string, price: number, durationDays: number }) {
+  const response = await fetch(`${API_BASE_URL}/courses/${courseId}/pricing-options`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(optionData)
+  });
+  return safeJson(response);
+}
+
+export async function updatePricingOption(optionId: number, optionData: { name: string, price: number, durationDays: number }) {
+  const response = await fetch(`${API_BASE_URL}/courses/pricing-options/${optionId}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(optionData)
+  });
+  return safeJson(response);
+}
+
+export async function deletePricingOption(optionId: number) {
+  const response = await fetch(`${API_BASE_URL}/courses/pricing-options/${optionId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
+  if (!response.ok) throw new Error("Failed to delete pricing option");
+}
+
+export async function fetchAdminBillingHistory(page: number = 0, size: number = 50) {
+  const response = await fetch(`${API_BASE_URL}/payments/admin/history?page=${page}&size=${size}`, {
+    headers: getAuthHeaders()
+  });
+  return safeJson(response);
 }

@@ -6,17 +6,26 @@ import { useRouter } from 'next/navigation';
 import { fetchAllCourses, createCheckoutSession } from '../../utils/studentApi';
 import styles from './programs.module.css';
 
+interface PricingOption {
+  id: number;
+  name: string;
+  price: number;
+  durationDays: number;
+}
+
 interface Course {
   id: number;
   title: string;
   description: string;
   thumbnailUrl: string;
   price: number;
+  pricingOptions?: PricingOption[];
 }
 
 export default function ProgramsPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCourseForPricing, setSelectedCourseForPricing] = useState<Course | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,16 +43,25 @@ export default function ProgramsPage() {
     }
   }
 
-  const handleBuy = async (courseId: number) => {
+  const handleBuy = async (course: Course) => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push(`/login?redirect=/programs`);
       return;
     }
+
+    if (course.pricingOptions && course.pricingOptions.length > 0) {
+      setSelectedCourseForPricing(course);
+      return;
+    }
     
+    await executePurchase(course.id);
+  };
+
+  const executePurchase = async (courseId: number, pricingOptionId?: number) => {
     try {
       setLoading(true);
-      const session = await createCheckoutSession(courseId);
+      const session = await createCheckoutSession(courseId, pricingOptionId);
       if (session.url) {
         window.location.href = session.url; // Redirect to Stripe
       }
@@ -90,14 +108,28 @@ export default function ProgramsPage() {
                 
                 <div className={styles.cardFooter}>
                   <div className={styles.price}>
-                    ${course.price?.toFixed(2) || '0.00'}
+                    {course.pricingOptions && course.pricingOptions.length > 0 ? (
+                      <span style={{ fontSize: '0.9rem', color: '#a78bfa' }}>Options from ${Math.min(...course.pricingOptions.map(o => o.price)).toFixed(2)}</span>
+                    ) : (
+                      <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontStyle: 'italic' }}>Tuition TBD</span>
+                    )}
                   </div>
-                  <button 
-                    className={styles.buyButton}
-                    onClick={() => handleBuy(course.id)}
-                  >
-                    Enroll Now
-                  </button>
+                  {course.pricingOptions && course.pricingOptions.length > 0 ? (
+                    <button 
+                      className={styles.buyButton}
+                      onClick={() => handleBuy(course)}
+                    >
+                      Enroll Now
+                    </button>
+                  ) : (
+                    <button 
+                      className={styles.buyButton} 
+                      disabled 
+                      style={{ opacity: 0.5, cursor: 'not-allowed', background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)' }}
+                    >
+                      Coming Soon
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -110,6 +142,33 @@ export default function ProgramsPage() {
           </div>
         )}
       </main>
+
+      {selectedCourseForPricing && (
+        <div className={styles.modal} onClick={() => setSelectedCourseForPricing(null)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <h2 className={styles.modalTitle}>Choose Access Duration</h2>
+            <p className={styles.modalSubtitle}>Select an access pass for <strong>{selectedCourseForPricing.title}</strong></p>
+            
+            <div className={styles.optionsList}>
+              {selectedCourseForPricing.pricingOptions?.map(option => (
+                <div key={option.id} className={styles.optionCard} onClick={() => executePurchase(selectedCourseForPricing.id, option.id)}>
+                  <div className={styles.optionMeta}>
+                    <span className={styles.optionName}>{option.name}</span>
+                    <span className={styles.optionDuration}>Valid for {option.durationDays} days</span>
+                  </div>
+                  <div className={styles.optionPrice}>
+                    ${option.price.toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className={styles.closeButton} onClick={() => setSelectedCourseForPricing(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

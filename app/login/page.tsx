@@ -119,6 +119,11 @@ function LoginContent() {
             className={styles.input}
           />
         </div>
+        <div className={styles.forgotContainer}>
+          <Link href="/login/forgot-password" className={styles.forgotLink}>
+            Forgot Password?
+          </Link>
+        </div>
         <button type="submit" disabled={loading} className={styles.submitButton}>
           {loading ? 'Logging in...' : 'Log In'}
         </button>

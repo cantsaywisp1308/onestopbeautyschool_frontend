@@ -35,6 +35,7 @@ export default function StudentCourseView() {
   const [lessons, setLessons] = useState<CourseLesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     if (isNaN(courseId)) return;
@@ -47,7 +48,21 @@ export default function StudentCourseView() {
       const enrollments = await fetchMyEnrollments();
       const enrollment = enrollments.find((e: any) => e.course.id === courseId);
       
-      if (!enrollment || (enrollment.status !== 'ACTIVE' && enrollment.status !== 'COMPLETED')) {
+      if (!enrollment) {
+        setAccessDenied(true);
+        setLoading(false);
+        return;
+      }
+
+      if (enrollment.status === 'EXPIRED') {
+        const courseData = await fetchCourseById(courseId);
+        setCourse(courseData);
+        setIsExpired(true);
+        setLoading(false);
+        return;
+      }
+
+      if (enrollment.status !== 'ACTIVE' && enrollment.status !== 'COMPLETED') {
         setAccessDenied(true);
         setLoading(false);
         return;
@@ -71,6 +86,82 @@ export default function StudentCourseView() {
   }
 
   if (loading) return <div className={styles.loader}>Loading course content...</div>;
+
+  if (isExpired && course) {
+    const handleRenew = async (pricingOptionId?: number) => {
+      try {
+        setLoading(true);
+        const { createCheckoutSession } = await import('../../../../utils/studentApi');
+        const session = await createCheckoutSession(courseId, pricingOptionId);
+        if (session.url) {
+          window.location.href = session.url;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to initiate renewal. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.brand}>OneStop Beauty</div>
+          <Link href="/student" style={{ color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.1)', padding: '0.5rem 1.2rem', borderRadius: '999px', fontSize: '0.9rem' }}>
+            &larr; Back to Dashboard
+          </Link>
+        </header>
+        <main className={styles.main} style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '3rem 2rem', backdropFilter: 'blur(20px)' }}>
+            <span style={{ fontSize: '3rem' }}>⏳</span>
+            <h1 style={{ fontSize: '2.25rem', marginTop: '1.5rem', fontWeight: '800', background: 'linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Access Pass Expired
+            </h1>
+            <p style={{ color: '#94a3b8', fontSize: '1.1rem', marginTop: '1rem', lineHeight: '1.6' }}>
+              Your access pass to <strong>{course.title}</strong> has ended. We hope you enjoyed the material!
+            </p>
+            <p style={{ color: '#a78bfa', fontSize: '0.95rem', fontWeight: 'bold', marginTop: '1.5rem' }}>
+              All your study progress, exam attempts, and completion logs are safely saved. Select a pass below to renew your access instantly.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2.5rem', textAlign: 'left' }}>
+              {(course as any).pricingOptions && (course as any).pricingOptions.length > 0 ? (
+                (course as any).pricingOptions.map((option: any) => (
+                  <div 
+                    key={option.id} 
+                    onClick={() => handleRenew(option.id)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(15, 23, 42, 0.4)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.25rem', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s' }}
+                  >
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>{option.name}</h4>
+                      <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Valid for {option.durationDays} days</span>
+                    </div>
+                    <span style={{ fontSize: '1.3rem', fontWeight: '800', color: '#10b981' }}>
+                      ${option.price.toFixed(2)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div 
+                  onClick={() => handleRenew()} 
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(15, 23, 42, 0.4)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.25rem', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s' }}
+                >
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>Standard Course Access</h4>
+                    <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Lifetime Access Pass</span>
+                  </div>
+                  <span style={{ fontSize: '1.3rem', fontWeight: '800', color: '#10b981' }}>
+                    ${(course as any).price?.toFixed(2) || '0.00'}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (accessDenied) return <div className={styles.container}><h2>Access Denied. You are not actively enrolled in this course.</h2><Link href="/student" style={{color: '#a78bfa'}}>Return to Dashboard</Link></div>;
   if (!course) return <div className={styles.container}><h2>Course not found</h2></div>;
 

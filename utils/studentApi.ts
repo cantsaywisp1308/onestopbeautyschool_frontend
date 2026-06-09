@@ -90,8 +90,9 @@ export async function fetchAllCourses() {
   return safeJson(response, "Failed to fetch courses", true);
 }
 
-export async function createCheckoutSession(courseId: number) {
-  const response = await fetch(`${API_BASE_URL}/payments/create-checkout-session?courseId=${courseId}`, {
+export async function createCheckoutSession(courseId: number, pricingOptionId?: number) {
+  const url = `${API_BASE_URL}/payments/create-checkout-session?courseId=${courseId}${pricingOptionId ? `&pricingOptionId=${pricingOptionId}` : ''}`;
+  const response = await fetch(url, {
     method: 'POST',
     headers: getAuthHeaders()
   });
@@ -105,6 +106,13 @@ export async function verifyPaymentSession(sessionId: string) {
   });
   if (!response.ok) throw new Error("Failed to verify payment session");
   return response.text();
+}
+
+export async function fetchMyBillingHistory(page: number = 0, size: number = 20) {
+  const response = await fetch(`${API_BASE_URL}/payments/my-history?page=${page}&size=${size}`, {
+    headers: getAuthHeaders()
+  });
+  return safeJson(response, "Failed to fetch billing history");
 }
 
 export async function fetchActiveExams() {
