@@ -175,17 +175,17 @@ export function SignupContent() {
 
           <div className={styles.inputGroup}>
             <label htmlFor="username">Choose a Username</label>
-            <input type="text" id="username" value={formData.username} onChange={handleChange} required className={styles.input} />
+            <input type="text" id="username" value={formData.username} onChange={handleChange} required className={styles.input} autoComplete="username" />
           </div>
 
           <div className={styles.row}>
             <div className={styles.inputGroup}>
               <label htmlFor="password">Password</label>
-              <input type="password" id="password" value={formData.password} onChange={handleChange} required className={styles.input} />
+              <input type="password" id="password" value={formData.password} onChange={handleChange} required className={styles.input} autoComplete="new-password" />
             </div>
             <div className={styles.inputGroup}>
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <input type="password" id="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required className={styles.input} />
+              <input type="password" id="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required className={styles.input} autoComplete="new-password" />
             </div>
           </div>
 
