@@ -28,6 +28,10 @@
     font-size: 0.9rem;
     cursor: pointer;
     outline: none;
+    max-width: 350px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .topicSelect option {
