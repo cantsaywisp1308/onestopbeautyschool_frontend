@@ -195,39 +195,37 @@ export default function TakeExam({ params }: { params: Promise<{ id: string }> }
             <span className={cardStyles.scorePercent}>{scoreData.percentage}%</span>
           </div>
 
-          {scoreData.passed && (
-            <div style={{ marginTop: '2rem', textAlign: 'left', width: '100%' }}>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#a78bfa' }}>Review Answer Explanations</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                {questions.map((q, idx) => {
-                  const chosenId = userAnswers[q.id];
-                  const correctOption = q.options.find(o => o.correct);
-                  const isCorrect = chosenId === correctOption?.id;
-                  
-                  return (
-                    <div key={q.id} style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '8px', borderLeft: isCorrect ? '4px solid #10b981' : '4px solid #ef4444' }}>
-                      <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#f8fafc' }}>{idx + 1}. {q.questionText}</p>
-                      <div style={{ fontSize: '0.9rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        <div style={{ color: isCorrect ? '#10b981' : '#f43f5e' }}>
-                          Your Answer: {q.options.find(o => o.id === chosenId)?.optionText || 'Skipped'}
-                        </div>
-                        {!isCorrect && (
-                          <div style={{ color: '#10b981', fontWeight: 600 }}>
-                            Correct: {correctOption?.optionText}
-                          </div>
-                        )}
+          <div style={{ marginTop: '2rem', textAlign: 'left', width: '100%' }}>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#a78bfa' }}>Review Answer Explanations</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              {questions.map((q, idx) => {
+                const chosenId = userAnswers[q.id];
+                const correctOption = q.options.find(o => o.correct);
+                const isCorrect = chosenId === correctOption?.id;
+                
+                return (
+                  <div key={q.id} style={{ background: 'rgba(255,255,255,0.05)', padding: '1.2rem', borderRadius: '8px', borderLeft: isCorrect ? '4px solid #10b981' : '4px solid #ef4444' }}>
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#f8fafc' }}>{idx + 1}. {q.questionText}</p>
+                    <div style={{ fontSize: '0.9rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <div style={{ color: isCorrect ? '#10b981' : '#f43f5e' }}>
+                        Your Answer: {q.options.find(o => o.id === chosenId)?.optionText || 'Skipped'}
                       </div>
-                      {q.generalExplanation && (
-                        <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.75rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                          💡 <strong>Explanation:</strong> {q.generalExplanation}
-                        </p>
+                      {!isCorrect && (
+                        <div style={{ color: '#10b981', fontWeight: 600 }}>
+                          Correct: {correctOption?.optionText}
+                        </div>
                       )}
                     </div>
-                  );
-                })}
-              </div>
+                    {q.generalExplanation && (
+                      <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.75rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.03)' }}>
+                        💡 <strong>Explanation:</strong> {q.generalExplanation}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           <div className={cardStyles.resultsActions}>
             <button 
