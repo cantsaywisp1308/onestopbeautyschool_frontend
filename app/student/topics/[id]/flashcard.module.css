@@ -6,6 +6,10 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background-color: #0d0614;
+  color: #fff;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .topBar {

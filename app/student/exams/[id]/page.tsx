@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { fetchExamById, fetchExamQuestions, submitAttempt, startOrResumeExam } from '../../../../utils/studentApi';
 import styles from '../../../dashboard.module.css';
 import cardStyles from '../../topics/[id]/flashcard.module.css';
@@ -17,9 +17,9 @@ interface Question {
   }[];
 }
 
-export default function TakeExam({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const examId = Number(id);
+export default function TakeExam() {
+  const params = useParams();
+  const examId = Number(params.id);
   const router = useRouter();
 
   const [exam, setExam] = useState<any>(null);

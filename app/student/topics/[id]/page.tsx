@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { fetchTopicById, fetchQuestionsByTopic, submitAttempt } from '../../../../utils/studentApi';
 import styles from '../../../dashboard.module.css';
 import cardStyles from './flashcard.module.css';
@@ -19,9 +19,9 @@ interface Question {
   }[];
 }
 
-export default function TopicPractice({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const topicId = Number(id);
+export default function TopicPractice() {
+  const params = useParams();
+  const topicId = Number(params.id);
   const router = useRouter();
 
   const [topic, setTopic] = useState<any>(null);
