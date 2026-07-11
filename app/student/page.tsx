@@ -105,7 +105,7 @@ function StudentDashboardContent() {
         <Link href="/" style={{ textDecoration: 'none' }}>
           <div className={styles.brand}>OneStop Student</div>
         </Link>
-        <div style={{ display: 'flex', gap: '1.25rem' }}>
+        <div className={styles.navLinks}>
           <Link href="/" style={{ 
             textDecoration: 'none', 
             color: '#94a3b8', 
