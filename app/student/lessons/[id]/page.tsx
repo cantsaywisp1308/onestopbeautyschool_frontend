@@ -51,88 +51,90 @@ export default function StudentLessonView() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.breadcrumb}>
-        <button onClick={() => router.back()} className={styles.backButton}>&larr; Back to Course</button>
-      </div>
+      <div className={styles.innerContainer}>
+        <div className={styles.breadcrumb}>
+          <button onClick={() => router.back()} className={styles.backButton}>&larr; Back to Course</button>
+        </div>
 
-      <header className={styles.header}>
-        <h1 className={styles.title}>{lesson?.title}</h1>
-      </header>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{lesson?.title}</h1>
+        </header>
 
-      <div className={styles.content}>
-        {sections.length === 0 ? (
-          <p className={styles.empty}>This lesson has no content yet.</p>
-        ) : currentIndex < sections.length ? (
-          <div className={styles.slideContainer}>
-            <div className={styles.progress}>
-              Part {currentIndex + 1} of {sections.length}
-            </div>
-            
-            <section className={styles.sectionBlock}>
-              {sections[currentIndex].title && <h2 className={styles.sectionTitle}>{sections[currentIndex].title}</h2>}
+        <div className={styles.content}>
+          {sections.length === 0 ? (
+            <p className={styles.empty}>This lesson has no content yet.</p>
+          ) : currentIndex < sections.length ? (
+            <div className={styles.slideContainer}>
+              <div className={styles.progress}>
+                Part {currentIndex + 1} of {sections.length}
+              </div>
               
-              {sections[currentIndex].videoUrl && getEmbedUrl(sections[currentIndex].videoUrl) && (
-                <div className={styles.videoWrapper}>
-                  <iframe 
-                    src={getEmbedUrl(sections[currentIndex].videoUrl)!} 
-                    title="YouTube video player" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen>
-                  </iframe>
-                </div>
-              )}
+              <section className={styles.sectionBlock}>
+                {sections[currentIndex].title && <h2 className={styles.sectionTitle}>{sections[currentIndex].title}</h2>}
+                
+                {sections[currentIndex].videoUrl && getEmbedUrl(sections[currentIndex].videoUrl) && (
+                  <div className={styles.videoWrapper}>
+                    <iframe 
+                      src={getEmbedUrl(sections[currentIndex].videoUrl)!} 
+                      title="YouTube video player" 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen>
+                    </iframe>
+                  </div>
+                )}
 
-              {sections[currentIndex].imageUrl && (
-                <div className={styles.imageWrapper}>
-                  <img src={sections[currentIndex].imageUrl} alt={sections[currentIndex].title || "Lesson image"} />
-                </div>
-              )}
+                {sections[currentIndex].imageUrl && (
+                  <div className={styles.imageWrapper}>
+                    <img src={sections[currentIndex].imageUrl} alt={sections[currentIndex].title || "Lesson image"} />
+                  </div>
+                )}
 
-              {sections[currentIndex].textContent && (
-                <div className={styles.textWrapper} dangerouslySetInnerHTML={{ __html: sections[currentIndex].textContent.replace(/&nbsp;|\u00a0/g, ' ') }}></div>
-              )}
-            </section>
+                {sections[currentIndex].textContent && (
+                  <div className={styles.textWrapper} dangerouslySetInnerHTML={{ __html: sections[currentIndex].textContent.replace(/&nbsp;|\u00a0/g, ' ') }}></div>
+                )}
+              </section>
 
-            <div className={styles.navigation}>
-              <button 
-                onClick={() => setCurrentIndex(currentIndex - 1)} 
-                disabled={currentIndex === 0}
-                className={styles.navButton}
-              >
-                &larr; Previous
-              </button>
-              <button 
-                onClick={() => setCurrentIndex(currentIndex + 1)} 
-                className={styles.navButtonPrimary}
-              >
-                {currentIndex === sections.length - 1 ? "Finish Lesson" : "Next \u2192"}
-              </button>
+              <div className={styles.navigation}>
+                <button 
+                  onClick={() => setCurrentIndex(currentIndex - 1)} 
+                  disabled={currentIndex === 0}
+                  className={styles.navButton}
+                >
+                  &larr; Previous
+                </button>
+                <button 
+                  onClick={() => setCurrentIndex(currentIndex + 1)} 
+                  className={styles.navButtonPrimary}
+                >
+                  {currentIndex === sections.length - 1 ? "Finish Lesson" : "Next \u2192"}
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className={styles.practiceArea}>
-            <h2>You finished the lesson!</h2>
-            <p>Ready to test your knowledge on the topics covered?</p>
-            <div className={styles.topicGrid}>
-              {lessonTopics && lessonTopics.length > 0 ? (
-                lessonTopics.map((topic: any) => (
-                  <Link key={topic.id} href={`/student/topics/${topic.id}`} className={styles.topicCard}>
-                    <h3>{topic.name}</h3>
-                    <div className={styles.topicAction}>Start Flashcards &rarr;</div>
-                  </Link>
-                ))
-              ) : (
-                <p className={styles.noTopics}>No practice topics assigned to this lesson.</p>
-              )}
+          ) : (
+            <div className={styles.practiceArea}>
+              <h2>You finished the lesson!</h2>
+              <p>Ready to test your knowledge on the topics covered?</p>
+              <div className={styles.topicGrid}>
+                {lessonTopics && lessonTopics.length > 0 ? (
+                  lessonTopics.map((topic: any) => (
+                    <Link key={topic.id} href={`/student/topics/${topic.id}`} className={styles.topicCard}>
+                      <h3>{topic.name}</h3>
+                      <div className={styles.topicAction}>Start Flashcards &rarr;</div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className={styles.noTopics}>No practice topics assigned to this lesson.</p>
+                )}
+              </div>
+              <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                <button onClick={() => setCurrentIndex(0)} className={styles.navButton}>
+                  Review Lesson Again
+                </button>
+              </div>
             </div>
-            <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-              <button onClick={() => setCurrentIndex(0)} className={styles.navButton}>
-                Review Lesson Again
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
