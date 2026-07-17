@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { fetchTopics, createTopic, updateTopic, deleteTopic, fetchCourses } from '../../../utils/adminApi';
 import { jwtDecode } from 'jwt-decode';
 import LogoutModal from '../../../components/LogoutModal';
@@ -167,35 +168,56 @@ export default function AdminTopics() {
           <div className={pageStyles.listSection}>
             <h3>Existing Topics</h3>
             {loading ? <p>Loading topics...</p> : (
-              <div className={pageStyles.grid}>
-                {topics.map(topic => (
-                  <div key={topic.id} className={pageStyles.topicItem}>
-                    <div className={pageStyles.topicInfo}>
-                      <h4>{topic.name}</h4>
-                      <p>{topic.description || "No description"}</p>
-                      {topic.course && (
-                        <span style={{display: 'inline-block', marginTop: '0.5rem', background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold'}}>
-                          📚 {topic.course.title}
-                        </span>
-                      )}
-                    </div>
-                    <div className={pageStyles.itemActions}>
-                      <button 
-                        className={pageStyles.editBtn}
-                        onClick={() => startEdit(topic)}
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        className={pageStyles.deleteBtn}
-                        onClick={() => handleDelete(topic.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {topics.length === 0 && <p>No topics created yet.</p>}
+              <div className={pageStyles.tableWrapper}>
+                {topics.length === 0 ? (
+                  <p style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No topics created yet.</p>
+                ) : (
+                  <table className={pageStyles.topicTable}>
+                    <thead>
+                      <tr>
+                        <th>Topic Name</th>
+                        <th>Assigned Course</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topics.map(topic => (
+                        <tr key={topic.id}>
+                          <td>
+                            <Link href={`/admin/questions?topicId=${topic.id}`} className={pageStyles.topicNameLink}>
+                              {topic.name}
+                            </Link>
+                          </td>
+                          <td>
+                            {topic.course ? (
+                              <span className={pageStyles.courseBadge}>
+                                📚 {topic.course.title}
+                              </span>
+                            ) : (
+                              <span style={{ color: '#64748b' }}>--</span>
+                            )}
+                          </td>
+                          <td>
+                            <div className={pageStyles.itemActions}>
+                              <button 
+                                className={pageStyles.editBtn}
+                                onClick={() => startEdit(topic)}
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                className={pageStyles.deleteBtn}
+                                onClick={() => handleDelete(topic.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
           </div>

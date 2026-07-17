@@ -33,6 +33,62 @@ export default function CourseLessonsAssigner() {
   
   const [selectedLessonId, setSelectedLessonId] = useState<string>('');
 
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === index) return;
+    setDragOverIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+    const reorderedLessons = [...courseLessons];
+    const [draggedItem] = reorderedLessons.splice(draggedIndex, 1);
+    reorderedLessons.splice(targetIndex, 0, draggedItem);
+
+    setCourseLessons(reorderedLessons);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+    setLoading(true);
+
+    try {
+      const updates = reorderedLessons.map((cl, index) => {
+        const newOrder = index + 1;
+        if (cl.orderIndex !== newOrder) {
+          return updateCourseLessonOrder(courseId, cl.id, newOrder);
+        }
+        return null;
+      }).filter((promise): promise is Promise<any> => promise !== null);
+
+      if (updates.length > 0) {
+        await Promise.all(updates);
+      }
+      const cLessons = await fetchCourseLessons(courseId);
+      setCourseLessons(cLessons);
+    } catch (err) {
+      alert("Failed to update lesson order");
+      console.error(err);
+      const cLessons = await fetchCourseLessons(courseId);
+      setCourseLessons(cLessons);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (courseId) {
       loadData();
@@ -109,27 +165,40 @@ export default function CourseLessonsAssigner() {
       ) : (
         <div className={styles.list}>
           {courseLessons.length === 0 && <p className={styles.empty}>No lessons added to this course yet.</p>}
-          {courseLessons.map(cl => (
-            <div key={cl.id} className={styles.item}>
-              <div className={styles.itemInfo}>
-                <div className={styles.orderControl}>
-                  <label>Order:</label>
-                  <input 
-                    type="number" 
-                    value={cl.orderIndex} 
-                    onChange={(e) => handleOrderChange(cl.id, Number(e.target.value))}
-                    className={styles.orderInput}
-                  />
+          {courseLessons.map((cl, index) => {
+            const isDragging = draggedIndex === index;
+            const isDragOver = dragOverIndex === index;
+            
+            return (
+              <div 
+                key={cl.id} 
+                className={`${styles.item} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''}`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragEnd={handleDragEnd}
+                onDrop={(e) => handleDrop(e, index)}
+              >
+                <div className={styles.itemInfo}>
+                  <div className={styles.dragHandle} title="Drag to reorder">
+                    ⋮⋮
+                  </div>
+                  <div className={styles.details}>
+                    <Link 
+                      href={`/admin/lessons/${cl.lesson.id}/sections`} 
+                      className={styles.clickableTitle}
+                      title="Click to view/edit content"
+                    >
+                      {cl.lesson.title}
+                    </Link>
+                  </div>
                 </div>
-                <div className={styles.details}>
-                  <h3 className={styles.lessonTitle}>{cl.lesson.title}</h3>
+                <div className={styles.itemActions}>
+                  <button onClick={() => handleRemove(cl.id)} className={styles.deleteBtn}>Remove from Course</button>
                 </div>
               </div>
-              <div className={styles.itemActions}>
-                <button onClick={() => handleRemove(cl.id)} className={styles.deleteBtn}>Remove from Course</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

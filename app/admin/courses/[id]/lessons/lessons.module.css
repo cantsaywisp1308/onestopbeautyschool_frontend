@@ -102,33 +102,45 @@
   gap: 1.5rem;
 }
 
-.orderControl {
+.dragHandle {
+  cursor: grab;
+  color: #64748b;
+  font-size: 1.25rem;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(0,0,0,0.3);
-  padding: 0.5rem;
-  border-radius: 8px;
+  user-select: none;
 }
 
-.orderControl label {
-  color: #94a3b8;
-  font-size: 0.8rem;
+.dragHandle:active {
+  cursor: grabbing;
 }
 
-.orderInput {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  width: 50px;
-  padding: 0.25rem;
-  border-radius: 4px;
-  text-align: center;
+.dragging {
+  opacity: 0.5;
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.4);
 }
 
-.lessonTitle {
+.dragOver {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.2);
+}
+
+.clickableTitle {
+  color: #fff;
+  text-decoration: none;
   font-size: 1.1rem;
+  font-weight: 600;
+  transition: color 0.2s;
 }
+
+.clickableTitle:hover {
+  color: #ec4899;
+  text-decoration: underline;
+}
+
+
 
 .itemActions {
   display: flex;

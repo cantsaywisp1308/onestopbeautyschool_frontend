@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   fetchTopics, 
   fetchQuestionsByTopic, 
@@ -27,7 +27,10 @@ interface Option {
   correct: boolean;
 }
 
-export default function AdminQuestions() {
+function AdminQuestionsContent() {
+  const searchParams = useSearchParams();
+  const queryTopicId = searchParams.get('topicId');
+
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
@@ -83,7 +86,11 @@ export default function AdminQuestions() {
       const data = await fetchTopics();
       setTopics(data);
       if (data.length > 0) {
-        setSelectedTopicId(data[0].id);
+        if (queryTopicId) {
+          setSelectedTopicId(Number(queryTopicId));
+        } else {
+          setSelectedTopicId(data[0].id);
+        }
       }
     } catch (err) { console.error(err); }
   }
@@ -385,6 +392,14 @@ export default function AdminQuestions() {
         }}
       />
     </div>
+  );
+}
+
+export default function AdminQuestions() {
+  return (
+    <Suspense fallback={<div className={styles.container}><p>Loading...</p></div>}>
+      <AdminQuestionsContent />
+    </Suspense>
   );
 }
 
