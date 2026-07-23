@@ -104,6 +104,12 @@ export default function StudentLessonView() {
                   &larr; Previous
                 </button>
                 <button 
+                  onClick={() => setCurrentIndex(sections.length)} 
+                  className={styles.skipBtn}
+                >
+                  Skip to Practice 🎯
+                </button>
+                <button 
                   onClick={() => setCurrentIndex(currentIndex + 1)} 
                   className={styles.navButtonPrimary}
                 >
