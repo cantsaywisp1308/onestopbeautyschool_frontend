@@ -21,6 +21,10 @@ export default function StudentLessonView() {
     if (lessonId) loadData();
   }, [lessonId]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentIndex]);
+
   async function loadData() {
     try {
       const l = await fetchLessonById(lessonId);
