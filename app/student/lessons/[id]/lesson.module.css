@@ -310,3 +310,20 @@
 .textWrapper tr:hover td {
   background: rgba(255, 255, 255, 0.03);
 }
+
+@media (max-width: 600px) {
+  .navigation {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .navigation button,
+  .navigation .skipBtn {
+    width: 100%;
+    text-align: center;
+    padding: 0.9rem;
+    font-size: 1rem;
+  }
+}
