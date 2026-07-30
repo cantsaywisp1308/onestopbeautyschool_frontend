@@ -61,9 +61,11 @@ export default function AdminLayout({
   }
 
   return (
-    <>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0d0614', color: '#ffffff' }}>
       <AdminSidebar />
-      <div style={{ paddingLeft: '4.5rem' }}>{children}</div>
-    </>
+      <div style={{ paddingLeft: '4.5rem', paddingRight: '1rem', paddingTop: '1rem', paddingBottom: '2rem' }}>
+        {children}
+      </div>
+    </div>
   );
 }

@@ -240,7 +240,11 @@ function AdminQuestionsContent() {
               value={selectedTopicId || ''} 
               onChange={e => setSelectedTopicId(Number(e.target.value))}
             >
-              {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+              {topics.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name.length > 40 ? t.name.substring(0, 40) + '...' : t.name}
+                </option>
+              ))}
             </select>
             <button className={pageStyles.addBtn} onClick={() => { resetForm(); setShowModal(true); }}>
               + New Question
@@ -301,7 +305,11 @@ function AdminQuestionsContent() {
                   style={{ width: '100%', padding: '0.75rem', background: '#000', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                 >
                   <option value="" disabled>Select a topic</option>
-                  {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  {topics.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.name.length > 40 ? t.name.substring(0, 40) + '...' : t.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 

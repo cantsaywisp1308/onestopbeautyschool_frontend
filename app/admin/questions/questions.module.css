@@ -333,3 +333,37 @@
   background: rgba(255, 255, 255, 0.1);
   color: white;
 }
+
+@media (max-width: 768px) {
+    .topBar {
+        flex-direction: column;
+        align-items: stretch;
+        position: relative;
+        top: 0;
+        gap: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .topicSelect {
+        max-width: 100%;
+        width: 100%;
+        text-align: center;
+    }
+
+    .qHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .cardBtns {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

@@ -63,21 +63,21 @@ export default function GlobalStudentDirectory() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%' }}>
           <Link href="/admin" className={styles.backLink}>&larr; Dashboard</Link>
-          <h1 className={styles.title}>Student Directory</h1>
+          <h1 className={styles.title} style={{ fontSize: '2rem', margin: 0, paddingRight: '1rem' }}>Student Directory</h1>
         </div>
       </div>
 
-      <div style={{ marginBottom: '2rem', background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div style={{ marginBottom: '2rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
         <input 
           type="text" 
-          placeholder="Search students by name, username, or email..." 
+          placeholder="Search students..." 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ width: '100%', padding: '1rem', background: '#0f172a', border: '1px solid #334155', color: 'white', borderRadius: '12px', fontSize: '1rem' }}
+          style={{ width: '100%', padding: '0.8rem 1rem', background: '#0f172a', border: '1px solid #334155', color: 'white', borderRadius: '12px', fontSize: '0.95rem' }}
         />
-        <p style={{ marginTop: '0.5rem', color: '#94a3b8', fontSize: '0.85rem' }}>
+        <p style={{ marginTop: '0.5rem', color: '#94a3b8', fontSize: '0.85rem', marginBottom: 0 }}>
           Showing {students.length} students
         </p>
       </div>
@@ -97,13 +97,13 @@ export default function GlobalStudentDirectory() {
               onClick={() => router.push(`/admin/students/${student.id}`)}
             >
               <div className={styles.cardContent}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', color: 'white', flexShrink: 0 }}>
                     {student.firstName?.[0] || student.username?.[0] || '?'}
                   </div>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{student.firstName} {student.lastName}</h3>
-                    <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{student.email}</span>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', wordBreak: 'break-word' }}>{student.firstName} {student.lastName}</h3>
+                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', wordBreak: 'break-all' }}>{student.email}</span>
                   </div>
                 </div>
                 
